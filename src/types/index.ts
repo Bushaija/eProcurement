@@ -1,0 +1,59 @@
+import { Icons } from '@/components/icons';
+
+export interface NavItem {
+  title: string;
+  url: string;
+  disabled?: boolean;
+  external?: boolean;
+  shortcut?: [string, string];
+  icon?: keyof typeof Icons;
+  label?: string;
+  description?: string;
+  isActive?: boolean;
+  items?: NavItem[];
+}
+
+export type purchaseOrderStatus = "PLANNED" | "APPROVED" | "REJECTED" | "SUBMITTED" | "COMPLETED";
+
+export type PurchaseOrderReviewStatus = 'ORDERED' | 'PLANNED' | 'CANCELLED' | 'RECEIVED' | 'HOLD' | 'PARTIAL RECEIVED';
+
+// export interface PurchaseOrderDetails {
+//   id: string; // Primary key ID as a serial integer
+//   procurement_request_id: string; // Foreign key linking to procurementRequestTable
+//   po_number: string; // Unique purchase order number
+//   po_issue_date?: string; // Issue date of the purchase order in ISO format
+//   po_creation_date?: string; // Creation date of the purchase order, defaults to now
+//   read_time?: string | null; // Timestamp of when the order was read, optional
+//   expected_delivery_date: string; // Expected delivery date in ISO format
+//   unit_price_ddp?: number | null; // Unit price delivered duty paid, optional
+//   total_cost_ddp?: number | null; // Total cost delivered duty paid, optional
+//   unit_price_cip?: number | null; // Unit price cost insurance paid, optional
+//   total_cost_cip?: number | null; // Total cost cost insurance paid, optional
+//   currency?: string; // Currency, defaults to 'USD' if not specified
+//   order_quantity: number; // Total order quantity, required
+//   received_quantity?: number; // Quantity received, default is 0 if not provided
+//   received_date?: string | null; // Date of receipt in ISO format, optional
+//   balanced_quantity?: number | null; // Calculated balanced quantity, optional
+//   shipment_status: 'ORDERED' | 'PLANNED' | 'CANCELLED' | 'RECEIVED' | 'HOLD' | 'PARTIAL RECEIVED'; // Shipment status with specific allowed values
+//   comments?: string | null; // Additional comments, optional
+//   created_at?: string; // Record creation timestamp, defaults to now
+//   updated_at?: string; // Record update timestamp, defaults to now
+// }
+
+export interface PurchaseOrderDetails {
+  category: string;
+  plannedUnit: string;
+  allocationDepartment: string;
+  packSize: string;
+  plannedOrderDate: Date;
+  plannedDeliveryDate: Date;
+  plannedQuantity: number;
+  revisedQuantity: number;
+  secondReview: number;
+  unitCost: number;
+  totalCost: number;
+  fundingSource: string;
+  status: "PLANNED" | "APPROVED" | "REJECTED" | "SUBMITTED" | "COMPLETED"
+}
+
+
