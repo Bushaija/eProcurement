@@ -317,7 +317,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
                 (order: TSelectPurchaseOrderSchema) =>
                   order.status === "PLANNED"
               ).length
-            : 340)}
+            : 0)}
           name={`Pending order${
             data && data.filter(
               (order: TSelectPurchaseOrderSchema) =>
@@ -334,7 +334,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
                 (order: TSelectPurchaseOrderSchema) =>
                   order.status === "COMPLETED"
               ).length
-            : 209)}
+            : 0)}
           name={`Approved order${
             data && data.filter(
               (order: TSelectPurchaseOrderSchema) =>
