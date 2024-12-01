@@ -7,6 +7,7 @@ import {
 } from "@/assets/icons/icons";
 import { Button } from "@/components/ui/button";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
+import { useDeletePurchaseOrder } from "@/features/purchase-orders/api/use-delete-order";
 import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
 import { Loader2, PencilIcon, SearchCheck, Trash2 } from "lucide-react";
@@ -21,6 +22,8 @@ import { useState } from "react";
     const [messageApi, contextHolder] = message.useMessage();
     const router = useRouter();
     const params = useParams();
+
+    const { mutate} = useDeletePurchaseOrder(Number(params.id));
   
     const items: MenuProps["items"] = [
       // {
@@ -89,29 +92,27 @@ import { useState } from "react";
       });
     }
   
-    const handleDeleteOrder = () => {
-      setIsDeletingOrder(true);
-      fetch(`/api/purchase-orders/${params.id}`, {
-        method: "DELETE",
-      })
-        .then((res) => {
-          router.push("/");
+    const handleDeletePurchaseOrder = () => {
+      mutate(undefined, {
+        onSuccess: () => {
           messageApi.open({
             type: "success",
-            content: "Order deleted successfully",
+            content: "Purchase order deleted successfully",
           });
           setIsModalOpen(false);
           setIsDeletingOrder(false);
-        })
-        .catch((err) => {
+        },
+        onError: (err) => {
+          router.push("/");
           messageApi.open({
             type: "error",
-            content: "Error deleting order",
+            content: err.message || "An error occurred while deleting the purchase order.",
           });
           setIsDeletingOrder(false);
-        });
+        },
+      });
     };
-  
+
     return (
       <>
         {contextHolder}
@@ -263,7 +264,7 @@ import { useState } from "react";
                 No, Cancel
               </button>
               <button
-                onClick={handleDeleteOrder}
+                onClick={handleDeletePurchaseOrder}
                 disabled={isDeletingOrder}
                 className="px-8 py-2 deleteBtn ml-4"
               >

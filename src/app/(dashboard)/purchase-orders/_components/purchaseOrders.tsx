@@ -7,11 +7,12 @@ import {
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
 import { TSelectPurchaseOrderSchema } from "@/db/schema";
+import { useDeletePurchaseOrder } from "@/features/purchase-orders/api/use-delete-order";
 import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-orders";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Modal, Skeleton, message } from "antd";
-import { Loader2, PencilIcon, SearchCheck, Trash2 } from "lucide-react";
+import { Loader2, PencilIcon, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -22,7 +23,7 @@ const PURCHASE_ORDER_OPTIONS = [
   { value: "CANCELLED", label: 'CANCELLED'},
   { value: "RECEIVED", label: 'RECEIVED'},
   { value: "HOLD", label: 'HOLD'},
-  { value: "PARTIAL RECEIVED", label: 'HOLD'},
+  { value: "PARTIAL RECEIVED", label: 'PARTIAL RECEIVED'},
 ]
 
 
@@ -32,15 +33,13 @@ const PURCHASE_ORDER_OPTIONS = [
   const PurchaseOrdersPage: React.FunctionComponent<DashboardProps> = () => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOrderID, setSelectedOrderID] = useState<number>();
     const [isDeletingOrder, setIsDeletingOrder] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
 
     const { data, isPending, error, refetch } = useGetPurchaseOrders()
-
-   
+    const { mutate} = useDeletePurchaseOrder(selectedOrderID);
   
     if (isPending) {
       return (
@@ -311,8 +310,27 @@ const PURCHASE_ORDER_OPTIONS = [
     const handleOrderClick = (id: string) => {
       router.push(`/purchase-orders/${id}`);
     };
+
+    const handleDeletePurchaseOrder = () => {
+      mutate(undefined, {
+        onSuccess: () => {
+          refetch();
+          messageApi.open({
+            type: "success",
+            content: "Purchase order deleted successfully",
+          });
+          setIsModalOpen(false);
+        },
+        onError: (err) => {
+          messageApi.open({
+            type: "error",
+            content: err.message || "An error occurred while deleting the purchase order.",
+          });
+        },
+      });
+    };
   
-    const handleDeleteOrder = () => {
+    {/* const handleDeletePurchaseOrder = () => {
       setIsDeletingOrder(true);
       fetch(`/api/purchase-orders/${selectedOrderID}`, {
         method: "DELETE",
@@ -333,7 +351,7 @@ const PURCHASE_ORDER_OPTIONS = [
           });
           setIsDeletingOrder(false);
         });
-    };
+    }; */}
   
     return (
       <>
@@ -389,7 +407,7 @@ const PURCHASE_ORDER_OPTIONS = [
                 No, Cancel
               </button>
               <button
-                onClick={handleDeleteOrder}
+                onClick={handleDeletePurchaseOrder}
                 className="px-8 py-2 deleteBtn ml-4"
                 disabled={isDeletingOrder}
               >

@@ -225,29 +225,6 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
     router.push(`/purchase-orders/${id}`);
   };
 
-  // const handleDeleteOrder = () => {
-  //   setIsDeletingOrder(true);
-
-  //   mutate(undefined, {
-  //     onSuccess: () => {
-  //       refetch();
-  //       messageApi.open({
-  //         type: "success",
-  //         content: "Request deleted successfully",
-  //       });
-  //       setIsModalOpen(false);
-  //       setIsDeletingOrder(false);
-  //     },
-  //     onError: (err) => {
-  //       messageApi.open({
-  //         type: "error",
-  //         content: err.message,
-  //       });
-  //       setIsDeletingOrder(false);
-  //     },
-  //   });
-  // };
-
   const handleDeleteOrder = () => {
     mutate(undefined, {
       onSuccess: () => {
