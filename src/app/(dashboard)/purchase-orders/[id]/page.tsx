@@ -41,7 +41,7 @@ import { useState } from "react";
         key: "1",
         label: (
           <button
-            onClick={() => router.push(`/orders/edit/${params.id}`)}
+            onClick={() => router.push(`/purchase-orders/edit/${params.id}`)}
             className="flex items-center gap-1"
           >
             <span>
@@ -91,7 +91,7 @@ import { useState } from "react";
   
     const handleDeleteOrder = () => {
       setIsDeletingOrder(true);
-      fetch(`/api/orders/${params.id}`, {
+      fetch(`/api/purchase-orders/${params.id}`, {
         method: "DELETE",
       })
         .then((res) => {
