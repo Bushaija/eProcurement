@@ -15,7 +15,9 @@ import {
 
 
 export const list: AppRouteHandler<ListRoute> = async (c)=> {
-    const reviews = await db.query.purchaseOrderReviewTable.findMany()
+    // const reviews = await db.query.purchaseOrderReviewTable.findMany()
+    const reviews = await db
+        .select().from(purchaseOrderReviewTable);
     return c.json(reviews);
 };
 

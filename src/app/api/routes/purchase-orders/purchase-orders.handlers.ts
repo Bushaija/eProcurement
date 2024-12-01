@@ -9,7 +9,9 @@ import type { AppRouteHandler } from "../../lib/types";
 
 
 export const list: AppRouteHandler<ListRoute> = async (c)=> {
-    const purchaseOrders = await db.query.purchaseOrderTable.findMany()
+    // const purchaseOrders = await db.query.purchaseOrderTable.findMany()
+    const purchaseOrders = await db
+        .select().from(purchaseOrderTable);
     return c.json(purchaseOrders);
 };
 
