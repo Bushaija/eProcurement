@@ -20,9 +20,7 @@ import { PurchaseOrderDetails } from "@/types";
 import { Modal, Skeleton, message } from "antd";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-// import { useGetPurchaseOrder } from "@/features/procurement-requests/api/use-get-request";
 import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
-// import { useEditPurchaseOrder } from "@/features/procurement-requests/api/use-update-request";
 import { useEditPurchaseOrder } from "@/features/purchase-orders/api/use-update-order";
 
 interface EditOrderProps {}

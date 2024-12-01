@@ -7,7 +7,6 @@ import {
 } from "@/assets/icons/icons";
 import { Button } from "@/components/ui/button";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
-// import { useGetPurchaseOrder } from "@/features/procurement-requests/api/use-get-request";
 import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
 import { Loader2, PencilIcon, SearchCheck, Trash2 } from "lucide-react";
@@ -42,7 +41,7 @@ import { useState } from "react";
         key: "1",
         label: (
           <button
-            onClick={() => router.push(`/requests/edit/${params.id}`)}
+            onClick={() => router.push(`/orders/edit/${params.id}`)}
             className="flex items-center gap-1"
           >
             <span>
@@ -92,7 +91,7 @@ import { useState } from "react";
   
     const handleDeleteOrder = () => {
       setIsDeletingOrder(true);
-      fetch(`/api/requests/${params.id}`, {
+      fetch(`/api/orders/${params.id}`, {
         method: "DELETE",
       })
         .then((res) => {
