@@ -54,6 +54,10 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
   const searchParams = useSearchParams()
   const purchaseOrderId = searchParams.get("orderId");
 
+  const [creationDate, setCreationDate] = useState(
+    new Date().toISOString().split("T")[0] 
+  );
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -199,8 +203,13 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
               <FormLabel>Purchase order creation date</FormLabel>
               <FormControl>
               <Input 
+                min={new Date().toISOString().split("T")[0]}
                 type="date" 
                 {...field} 
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  setCreationDate(e.target.value); // Update planned order date
+                }}
               />
               </FormControl>
               <FormMessage />
@@ -216,7 +225,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Purchase order issue date</FormLabel>
               <FormControl>
-                <Input type="date" placeholder="Enter PO issue date" {...field} />
+                <Input type="date" placeholder="Enter PO issue date" {...field} min={creationDate}/>
               </FormControl>
               <FormMessage />
             </FormItem>
