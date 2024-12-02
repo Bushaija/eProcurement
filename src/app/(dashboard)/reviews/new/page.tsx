@@ -360,7 +360,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
     <FormItem className="w-full">
       <FormLabel>Read time</FormLabel>
       <FormControl>
-        <Input type="date" placeholder="Enter the read time" {...field} />
+        <Input type="date" placeholder="Enter the read time" {...field} min={new Date().toISOString().split("T")[0]} />
       </FormControl>
       <FormMessage />
     </FormItem>
