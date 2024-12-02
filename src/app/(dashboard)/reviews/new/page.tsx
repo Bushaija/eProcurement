@@ -249,7 +249,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Total cost (DDP)</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter total cost DDP" {...field} />
+                <Input type="number" placeholder="Enter total cost DDP" {...field} min={0}/>
               </FormControl>
               <FormMessage />
             </FormItem>

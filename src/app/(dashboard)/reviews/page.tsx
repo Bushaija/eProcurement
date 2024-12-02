@@ -309,12 +309,12 @@ interface DashboardProps {}
               View and evaluate all purchase orders.
             </p>
           </div>
-          <Button
+          {/* <Button
             onClick={() => router.push("/reviews/new")}
             className="bg-[#7201FD] hover:bg-[#430194] px-4 py-3 rounded-[10px] text-white"
           >
             Start PO Evaluation
-          </Button>
+          </Button> */}
         </div>
 
         
