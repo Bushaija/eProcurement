@@ -263,7 +263,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Unit Price CIP</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input type="number" {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -277,7 +277,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Total cost CIP</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input type="number" {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -309,7 +309,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Order quantity</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="Enter order quantity" {...field} />
+                <Input type="number" placeholder="Enter order quantity" {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -323,7 +323,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Received Quantity</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter received quantity" {...field} />
+                <Input type="number" placeholder="Enter received quantity" {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -376,7 +376,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Balanced quantity</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter planned quantity" {...field} />
+                <Input type="number" placeholder="Enter planned quantity" {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
