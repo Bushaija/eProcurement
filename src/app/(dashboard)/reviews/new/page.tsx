@@ -210,19 +210,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
 
        
 
-<FormField
-  control={form.control}
-  name="expectedDeliveryDate"
-  render={({ field }) => (
-    <FormItem className="w-full">
-      <FormLabel>Expected Delivery Date(EDD)</FormLabel>
-      <FormControl>
-        <Input type="date" placeholder="Enter expected delivery date" {...field} />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+
 
         <FormField
           control={form.control}

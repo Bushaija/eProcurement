@@ -15,6 +15,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input";
 import { Modal, message } from "antd";
 import { useState } from "react";
@@ -78,6 +86,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [plannedOrderDate, setPlannedOrderDate] = useState(
+    new Date().toISOString().split("T")[0] 
+  );
 
   const { mutate, isPending } = useCreatePurchaseOrder();
 
@@ -98,6 +109,8 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
       fundingSource: "",
     },
     });
+
+
 
 
 
@@ -183,28 +196,45 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                 name="plannedUnit"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Planning Unit</FormLabel>
+                    <FormLabel>Medical Item</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter planning unit" {...field} />
+                      <Input placeholder="Enter medical item or planning unit" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-                {/* Allocation */}
-                <FormField
+              <FormField
                 control={form.control}
                 name="allocationDepartment"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Allocation Department</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter allocation" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Division</FormLabel>
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Division" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="CP">CP</SelectItem>
+                          <SelectItem value="CP LAB">CP LAB</SelectItem>
+                          <SelectItem value="HI">HI</SelectItem>
+                          <SelectItem value="HI LAB">HI LAB</SelectItem>
+                          <SelectItem value="MALARIA">MALARIA PRODUCT</SelectItem>
+                          <SelectItem value="MCCH">MCCH</SelectItem>
+                          <SelectItem value="PT/LEPROSY">PT/LEPROSY</SelectItem>
+                          <SelectItem value="TB LAB">TB LAB</SelectItem>
+                          <SelectItem value="TB MEDICINE">TB MEDICINE</SelectItem>
+                          <SelectItem value="TB NUTRITION">TB NUTRITION</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
 
       </div>
@@ -235,7 +265,14 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                   <FormItem className="w-full">
                     <FormLabel>Planned Order Date</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input 
+                        min={new Date().toISOString().split("T")[0]}
+                        type="date" {...field} 
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setPlannedOrderDate(e.target.value); // Update planned order date
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -249,7 +286,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                   <FormItem className="w-full">
                     <FormLabel>Planned Delivery Date</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input type="date" {...field} min={plannedOrderDate}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,7 +312,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                 control={form.control}
                 name="plannedQuantity"
                 render={({ field }) => (
-                  <FormItem className="w-full">
+                  <FormItem className="w-[370px]">
                     <FormLabel>Planned Quantity</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="Enter planned quantity" {...field} />
@@ -286,7 +323,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
               />
 
               {/* Revised Quantity */}
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="revisedQuantity"
                 render={({ field }) => (
@@ -298,10 +335,10 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               {/* Second Review Notes */}
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="secondReview"
                 render={({ field }) => (
@@ -313,7 +350,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             <div className="flex gap-5 mt-6 max-sm:flex-wrap">
