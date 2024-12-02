@@ -135,7 +135,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
       </div>
       <div className="bg-white rounded-[10px] mt-10 p-6 max-sm:mt-4">
         <p className="text-[#2B2829] text-xl mb-2 font-semibold">
-          Purchase Order Details
+          Create New Purchase Order Review 
         </p>
         <div className="bg-white rounded-[10px] mt-4 p-6 max-sm:mt-8">
  
@@ -284,9 +284,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />
 
-</div>
-<div className="flex gap-5 mt-6 max-sm:flex-wrap">
-
         {/* Planned Delivery Date */}
         <FormField
           control={form.control}
@@ -301,6 +298,11 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             </FormItem>
           )}
         />
+
+</div>
+<div className="flex gap-5 mt-6 max-sm:flex-wrap">
+
+        
 
         <FormField
           control={form.control}
