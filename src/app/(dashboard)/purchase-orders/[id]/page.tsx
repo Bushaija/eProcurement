@@ -6,14 +6,15 @@ import {
   ThreeDotsMenuIcon,
 } from "@/assets/icons/icons";
 import { Button } from "@/components/ui/button";
-import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 import { useDeletePurchaseOrder } from "@/features/purchase-orders/api/use-delete-order";
 import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
 import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-orders";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
-import { Loader2, PencilIcon, SearchCheck, Trash2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator"
+import { Loader2, PencilIcon, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { calculateDeliveryStatus } from "@/lib/utils";
   
   interface OrderDetailsProps {}
   
@@ -77,6 +78,12 @@ import { useState } from "react";
       isLoading,
       isError
     } = useGetPurchaseOrder(Number(params.id));
+
+    const msg = data?.plannedDeliveryDate 
+    ? calculateDeliveryStatus(data.plannedDeliveryDate) 
+    : "Planned delivery date is not available.";
+
+    console.log("message: ", msg);
   
 
     if (isLoading) {
@@ -118,12 +125,11 @@ import { useState } from "react";
         },
       });
     };
-    
 
     return (
       <>
         {contextHolder}
-        <div>
+        <section>
           <button
             className="flex items-center gap-1"
             onClick={() => router.back()}
@@ -133,129 +139,173 @@ import { useState } from "react";
             </span>
             <span className="text-[#2D3339] font-semibold">Back</span>
           </button>
-        </div>
-        <div className="bg-white rounded-[10px] mt-10 p-6">
-          <div className="flex items-center w-full justify-between">
-            <p className="text-[#2B2829] text-xl font-semibold">
-              Purchase Order Details
-            </p>
+        </section>
+
+        <section className="bg-white rounded-[10px] mt-10 p-6">
+          <div className="flex items-center w-full justify-between mb-2">
+            <p className="text-[#40474F] text-2xl font-semibold">Summary</p>
             <Dropdown menu={{ items }} placement="bottomLeft" arrow>
               <Button className="bg-white hover:bg-[#EFF4FB] border border-[#D2D6DB] px-2">
                 <ThreeDotsMenuIcon />
               </Button>
             </Dropdown>
           </div>
-          <div className="flex items-center gap-6 mt-6">
-    <p className="text-[#2B2829] font-semibold">
-      Order ID: #{data?.id}
-    </p>
-    <p>
-      <span className="text-[#2B2829] font-semibold">Order status:</span>{" "}
-      {data?.status === "PLANNED" ? (
-        <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-          {data?.status}
-        </span>
-      ) : (
-        <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-          {data?.status}
-        </span>
-      )}
-    </p>
-  </div>
-  
-  <div className="mt-10 flex flex-wrap">
-    <div>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Category: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.category}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Planning Unit: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.plannedUnit}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Allocation: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.allocationDepartment}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Pack Size: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.packSize}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Planned Order Date: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.plannedOrderDate}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Planned Delivery Date: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.plannedDeliveryDate}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Planned Quantity: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.plannedQuantity}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Revised Quantity: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.revisedQuantity !== null ? data?.revisedQuantity : 'N/A'}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Second Review: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.secondReview || 'N/A'}
-        </span>
-      </p>
-    </div>
+            
+          <Separator />
+
+          <article>
+            <div className="flex items-start gap-6 mt-6 h-5">
+              {/* <div> */}
+                <div className="flex  gap-4 text-[#98A2B3] font-semibold">
+                  <p>Order ID: </p>
+                  <span className="text-[#40474F]">#{data?.id}</span>
+                </div>
+
+                <Separator orientation="vertical" />
+                
+                <div>
+                  <span className="text-[#98A2B3] font-semibold">Order status</span>
+                  {" "}
+                  {
+                    data?.status === "PLANNED" 
+                    ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{data?.status}</span>) 
+                    : ( 
+                        <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
+                          {data?.status}
+                        </span>
+                    )
+                  }
+                </div>
+
+                <Separator orientation="vertical" />
+
+                <div className="text-">
+                  <span
+                    className={`${
+                      msg.includes("delayed")
+                        ? "text-[#D32F2F] bg-[#FEEAEA]" // Red for overdue
+                        : "text-[#10A142] bg-[#EAFFF1]" // Green for ongoing
+                    } px-3 py-1.5 rounded-[10px] text-sm font-medium`}
+                  >
+                    {msg}
+                  </span>
+                </div>
+
+                <div>
+
+                </div>
+              {/* </div> */}
+            </div>
     
-    <div className="ml-[300px] max-sm:ml-0">
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Unit Cost (USD): </span>
-        <span className="text-[#40474F] font-light">
-          ${data?.unitCost}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Total Cost (USD): </span>
-        <span className="text-[#40474F] font-light">
-          ${data?.totalCost}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Funding Source: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.fundingSource}
-        </span>
-      </p>
-      {/* <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Created At: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.created_at || 'N/A'}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Updated At: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.updated_at || 'N/A'}
-        </span>
-      </p> */}
-    </div>
-  </div>
+            <div className="mt-10 flex flex-col gap-4 flex-wrap">
+              <div className="flex gap-8">
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Category </p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.category}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Planning Unit </p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.plannedUnit}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Allocation </p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.allocationDepartment}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-8">
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Pack Size </p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.packSize}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Planned Order Date</p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.plannedOrderDate}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Planned Delivery Date</p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.plannedDeliveryDate}
+                  </p>
+                </div>
+              </div> 
+
+              <div className="flex gap-8">
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Planned Quantity</p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.plannedQuantity}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Revised Quantity</p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.revisedQuantity !== null ? data?.revisedQuantity : 'N/A'}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Second Review</p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.secondReview || 'N/A'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="">
+                <div className="flex gap-8">
+                  <div className="flex flex-col text-sm w-[180px]">
+                    <p className="font-semibold text-[#98A2B3]">Unit Cost (USD)</p>
+                    <p className="text-[#40474F] font-medium">
+                      ${data?.unitCost}
+                    </p>
+                  </div>
+                  <div className="flex flex-col text-sm w-[180px]">
+                    <p className="font-semibold text-[#98A2B3]">Total Cost (USD)</p>
+                    <p className="text-[#40474F] font-medium">
+                      ${data?.totalCost?.toFixed(4)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col text-sm w-[180px]">
+                    <p className="font-semibold text-[#98A2B3]">Funding Source</p>
+                    <p className="text-[#40474F] font-medium">
+                      {data?.fundingSource}
+                    </p>
+                  </div>
+                </div> 
+
+                <div className="flex gap-8 mt-4">
+                  <div className="flex flex-col text-sm w-[180px]">
+                    <p className="font-semibold text-[#98A2B3]">Created At</p>
+                    <p className="text-[#40474F] font-medium">
+                      {data?.createdAt || 'N/A'}
+                    </p>
+                  </div>
+                  <div className="flex flex-col text-sm w-[180px]">
+                    <p className="font-semibold text-[#98A2B3]">Updated At</p>
+                    <p className="text-[#40474F] font-medium">
+                      {data?.updatedAt || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article>
+
+          </article>
   
-        </div>
+        </section>
         <Modal
           closeIcon={null}
           width={338}
