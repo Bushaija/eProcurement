@@ -135,7 +135,7 @@ import { useState } from "react";
         <div className="bg-white rounded-[10px] mt-10 p-6">
           <div className="flex items-center w-full justify-between">
             <p className="text-[#2B2829] text-xl font-semibold">
-              Purchase Order Details
+              Purchase Order Review Details
             </p>
             <Dropdown menu={{ items }} placement="bottomLeft" arrow>
               <Button className="bg-white hover:bg-[#EFF4FB] border border-[#D2D6DB] px-2">
@@ -143,135 +143,151 @@ import { useState } from "react";
               </Button>
             </Dropdown>
           </div>
+
           <div className="flex items-center gap-6 mt-6">
-    <p className="text-[#2B2829] font-semibold">
-      Order ID: #{data?.purchaseOrderId}
-    </p>
-    <p>
-      <span className="text-[#2B2829] font-semibold">Shipment status:</span>{" "}
-      {data?.shipmentStatus === "PLANNED" ? (
-        <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-          {data?.shipmentStatus || "N/A"}
-        </span>
-      ) : (
-        <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-          {data?.shipmentStatus || "N/A"}
-        </span>
-      )}
-    </p>
-  </div>
+            <p className="text-[#2B2829] font-semibold">
+              Order ID: #{data?.purchaseOrderId}
+            </p>
+            <p>
+              <span className="text-[#2B2829] font-semibold">Shipment status:</span>{" "}
+              {data?.shipmentStatus === "PLANNED" ? (
+                <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">
+                  {data?.shipmentStatus || "N/A"}
+                </span>
+              ) : (
+                <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
+                  {data?.shipmentStatus || "N/A"}
+                </span>
+              )}
+            </p>
+          </div>
   
-  <div className="mt-10 flex flex-wrap">
-    <div>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Purchase Order Creation Date: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.purchaseOrderCreationDate || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Purchase Order Number: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.purchaseOrderNumber || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Purchase Order Issue Date: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.purchaseOrderIssueDate || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Read Time: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.readTime || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Expected Delivery Date(EDD): </span>
-        <span className="text-[#40474F] font-light">
-          {data?.expectedDeliveryDate || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Unit Price DDP: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.unitPriceDdp || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Total Cost DDP: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.totalCostDdp || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Unit Price CIP: </span>
-        <span className="text-[#40474F] font-light">
-          {/* {data?.revisedQuantity !== null ? data?.revisedQuantity : 'N/A'} */}
-          {data?.unitPriceCip || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Total Cost CIP: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.totalCostCip || "N/A"}
-        </span>
-      </p>
-    </div>
-    
-    <div className="ml-[300px] max-sm:ml-0">
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">CURRENCY (USD): </span>
-        <span className="text-[#40474F] font-light">
-          {data?.currency || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Order Quantity: </span>
-        <span className="text-[#40474F] font-light">
-          ${data?.orderQuantity || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Received Quantity: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.receivedQuantity || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Received Date: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.receivedDate}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Balanced Quantity: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.balancedQuantity || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Comments: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.receivedQuantity || "N/A"}
-        </span>
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Created At: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.createdAt || 'N/A' || "N/A"}
-        </span> 
-      </p>
-      <p className="mb-4">
-        <span className="font-semibold text-[#2B2829]">Updated At: </span>
-        <span className="text-[#40474F] font-light">
-          {data?.updatedAt || 'N/A' || "N/A"}
-        </span>
-      </p>
-    </div>
-  </div>
+          <div className="mt-10 flex flex-col gap-4 flex-wrap">
+            <div className="flex gap-8">
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Purchase Order Creation Date: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.purchaseOrderCreationDate || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Purchase Order Number: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.purchaseOrderNumber || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Purchase Order Issue Date: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.purchaseOrderIssueDate || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-8">
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Read Time: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.readTime || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Expected Delivery Date(EDD): </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.expectedDeliveryDate || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Unit Price DDP: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.unitPriceDdp || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-8">
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Total Cost DDP: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.totalCostDdp || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Unit Price CIP: </p>
+                <p className="text-[#40474F] font-medium">
+                  {/* {data?.revisedQuantity !== null ? data?.revisedQuantity : 'N/A'} */}
+                  {data?.unitPriceCip || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Total Cost CIP: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.totalCostCip || "N/A"}
+                </p>
+              </div>
+            </div>
   
+          <div className="flex flex-col gap-4">
+             <div className="flex gap-8">
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">CURRENCY (USD): </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.currency || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Order Quantity: </p>
+                <p className="text-[#40474F] font-medium">
+                  ${data?.orderQuantity || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Received Quantity: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.receivedQuantity || "N/A"}
+                </p>
+              </div>
+            </div>
+
+             <div className="flex gap-8">
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Received Date: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.receivedDate}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Balanced Quantity: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.balancedQuantity || "N/A"}
+                </p>
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Comments: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.receivedQuantity || "N/A"}
+                </p>
+              </div>
+            </div>
+
+             <div className="flex gap-8">
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Created At: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.createdAt || 'N/A' || "N/A"}
+                </p> 
+              </div>
+              <div className="flex flex-col text-sm w-[280px]">
+                <p className="font-semibold text-[#98A2B3]">Updated At: </p>
+                <p className="text-[#40474F] font-medium">
+                  {data?.updatedAt || 'N/A' || "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+
+          </div>
         </div>
         <Modal
           closeIcon={null}

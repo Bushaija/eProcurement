@@ -219,16 +219,20 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="CP">CP</SelectItem>
-                          <SelectItem value="CP LAB">CP LAB</SelectItem>
-                          <SelectItem value="HI">HI</SelectItem>
-                          <SelectItem value="HI LAB">HI LAB</SelectItem>
-                          <SelectItem value="MALARIA">MALARIA PRODUCT</SelectItem>
+                          <SelectItem value="BTD">BTD</SelectItem>
+                          <SelectItem value="CS">CS</SelectItem>
+                          <SelectItem value="HIV/AIDS & STIs D">HIV/AIDS & STIs D</SelectItem>
                           <SelectItem value="MCCH">MCCH</SelectItem>
-                          <SelectItem value="PT/LEPROSY">PT/LEPROSY</SelectItem>
-                          <SelectItem value="TB LAB">TB LAB</SelectItem>
-                          <SelectItem value="TB MEDICINE">TB MEDICINE</SelectItem>
-                          <SelectItem value="TB NUTRITION">TB NUTRITION</SelectItem>
+                          <SelectItem value="MH">MH</SelectItem>
+                          <SelectItem value="MOPD">MOPD</SelectItem>
+                          <SelectItem value="MTD">MTD</SelectItem>
+                          <SelectItem value="NCDs">NCDs</SelectItem>
+                          <SelectItem value="NRL">NRL</SelectItem>
+                          <SelectItem value="PHS_EPR">PHS_EPR</SelectItem>
+                          <SelectItem value="RHCC">RHCC</SelectItem>
+                          <SelectItem value="RIDS">RIDS</SelectItem>
+                          <SelectItem value="SAMU">SAMU</SelectItem>
+                          <SelectItem value="TB">TB</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -236,7 +240,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                   );
                 }}
               />
-
       </div>
       <div className="flex gap-5 mt-3 max-sm:flex-wrap">
 

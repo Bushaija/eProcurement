@@ -2,7 +2,7 @@
 
 import { ArrowLeftIcon, SuccessIcon } from "@/assets/icons/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useSearchParams } from 'next/navigation'
 import { Input } from "@/components/ui/input";
 import { Modal, message } from "antd";
 import { useState } from "react";
@@ -45,18 +46,18 @@ const FormSchema = z.object({
   comments: z.string()
 });
 
-
-
 const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProps> = () => {
   const { mutate, isPending } = useCreatePurchaseOrderReview();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
+  const searchParams = useSearchParams()
+  const purchaseOrderId = searchParams.get("orderId");
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-        purchaseOrderId: 0,
+        purchaseOrderId: Number(purchaseOrderId),
         purchaseOrderCreationDate: "",
         purchaseOrderNumber: "",
         purchaseOrderIssueDate: "",
@@ -76,7 +77,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         shipmentStatus: "PLANNED",
         comments: "",
     },
-    });
+  });
 
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
@@ -114,7 +115,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
       
     };
   
-
   return (
     <>
       {contextHolder}
@@ -139,22 +139,43 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
   <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)} className="">
     <div className="flex gap-5 mt-6 max-sm:flex-wrap">
-      <FormField
+        {/* <FormField
           control={form.control}
           name="purchaseOrderId"
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Purchase Order ID</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter item request ID" {...field} />
+                <Input 
+                  value={purchaseOrderId || field.value || ""}
+                  readOnly
+                  type="number" 
+                  placeholder="Enter item request ID" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+        <FormField
+          control={form.control}
+          name="purchaseOrderId"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Purchase Order ID</FormLabel>
+              <FormControl>
+                <Input 
+                  readOnly
+                  type="number" 
+                  placeholder="Enter item request ID" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        
-
 
         <FormField
           control={form.control}
@@ -188,19 +209,19 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         />    
 
        
-<FormField
-  control={form.control}
-  name="purchaseOrderIssueDate"
-  render={({ field }) => (
-    <FormItem className="w-full">
-      <FormLabel>Purchase order issue date</FormLabel>
-      <FormControl>
-        <Input type="date" placeholder="Enter PO issue date" {...field} />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+        <FormField
+          control={form.control}
+          name="purchaseOrderIssueDate"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Purchase order issue date</FormLabel>
+              <FormControl>
+                <Input type="date" placeholder="Enter PO issue date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         
 

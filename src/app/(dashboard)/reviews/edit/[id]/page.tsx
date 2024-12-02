@@ -157,455 +157,453 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
       <p className="text-[#2B2829] text-xl mb-8 font-semibold">Order Details</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-    <div className="flex gap-5 max-sm:flex-wrap">
-
-      <FormField
-        control={form.control}
-        name="purchaseOrderCreationDate"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Purchase order creation date</FormLabel>
-            <FormControl>
-              <Input
-                type="date"
-                placeholder="Enter Purchase creation date"
-                {...field}
-                value={field.value || selectedOrder?.purchaseOrderCreationDate || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  form.setValue("purchaseOrderCreationDate", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    purchaseOrderCreationDate: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="purchaseOrderNumber"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Purchase order number</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Enter purchase order no"
-                {...field}
-                value={field.value || selectedOrder?.purchaseOrderNumber || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  form.setValue("purchaseOrderNumber", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    purchaseOrderNumber: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-
-     <div className="flex gap-5 mt-6 max-sm:flex-wrap">
-      <FormField
-        control={form.control}
-        name="purchaseOrderIssueDate"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Purchase order issue date</FormLabel>
-            <FormControl>
-              <Input
-                type="date"
-                placeholder="Enter purchaseOrderIssueDate"
-                {...field}
-                value={field.value || selectedOrder?.purchaseOrderIssueDate || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  form.setValue("purchaseOrderIssueDate", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    purchaseOrderIssueDate: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="readTime"
-        render={({ field }) => (
-          <FormItem className="w-full">
-          <FormLabel>Read Time</FormLabel>
-          <FormControl>
-          <Input
-          type="date"
-          placeholder="Enter read time"
-          {...field}
-          value={field.value || selectedOrder?.readTime || ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            form.setValue("readTime", value);
-            setSelectedOrder((prev: PurchaseOrderDetails) => ({
-              ...prev,
-              readTime: value,
-              }));
-              }}
-        />
-        </FormControl>
-        <FormMessage />
-        </FormItem>
-        )}
-        />
-
-      <FormField
-        control={form.control}
-        name="expectedDeliveryDate"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Expected Delivery Date (EDD)</FormLabel>
-            <FormControl>
-              <Input
-                type="date"
-                {...field}
-                value={field.value || selectedOrder?.expectedDeliveryDate || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  form.setValue("expectedDeliveryDate", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    expectedDeliveryDate: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-
-    <div className="flex gap-5 mt-6 max-sm:flex-wrap">
-      <FormField
-        control={form.control}
-        name="unitPriceDdp"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Unit price DDP</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                {...field}
-                value={field.value || selectedOrder?.unitPriceDdp || ""}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  form.setValue("unitPriceDdp", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    unitPriceDdp: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-
-<FormField
-  control={form.control}
-  name="totalCostDdp"
-  render={({ field }) => (
-    <FormItem className="w-full">
-      <FormLabel>Total cost DDP</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          placeholder="Enter planned quantity"
-          {...field}
-          value={field.value || selectedOrder?.totalCostDdp || ""}
-          onChange={(e) => {
-            const value = parseFloat(e.target.value); // Parse as a number
-            form.setValue("totalCostDdp", value); // Set the value as a number
-            setSelectedOrder((prev: PurchaseOrderDetails) => ({
-              ...prev,
-              totalCostDdp: value,
-            }));
-          }}
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-
-      <FormField
-        control={form.control}
-        name="unitPriceCip"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Unit price CIP</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                placeholder="Enter revised quantity"
-                {...field}
-                value={field.value || selectedOrder?.unitPriceCip || ""}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  form.setValue("unitPriceCip", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    unitPriceCip: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-
-    <div className="flex gap-5 mt-6 max-sm:flex-wrap">
-      <FormField
-        control={form.control}
-        name="totalCostCip"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Total cost CIP</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                placeholder="Enter Total cost CIP"
-                {...field}
-                value={field.value || selectedOrder?.totalCostCip || ""}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  form.setValue("totalCostCip", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    totalCostCip: value,
-                  }));
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      
-      <FormField
-        control={form.control}
-        name="currency"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Currency</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Enter unit cost"
-                {...field}
-                value={field.value || selectedOrder?.currency || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  form.setValue("currency", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    currency: value,
-                    }));
-                    }}
-              />
-            </FormControl>
-            <FormMessage />
-            </FormItem>
-            )}
+          <div className="flex gap-5 max-sm:flex-wrap">
+            <FormField
+              control={form.control}
+              name="purchaseOrderCreationDate"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Purchase order creation date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      placeholder="Enter Purchase creation date"
+                      {...field}
+                      value={field.value || selectedOrder?.purchaseOrderCreationDate || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("purchaseOrderCreationDate", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          purchaseOrderCreationDate: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            <FormField
+              control={form.control}
+              name="purchaseOrderNumber"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Purchase order number</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter purchase order no"
+                      {...field}
+                      value={field.value || selectedOrder?.purchaseOrderNumber || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("purchaseOrderNumber", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          purchaseOrderNumber: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="purchaseOrderIssueDate"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Purchase order issue date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      placeholder="Enter purchaseOrderIssueDate"
+                      {...field}
+                      value={field.value || selectedOrder?.purchaseOrderIssueDate || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("purchaseOrderIssueDate", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          purchaseOrderIssueDate: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="readTime"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Read Time</FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    placeholder="Enter read time"
+                    {...field}
+                    value={field.value || selectedOrder?.readTime || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      form.setValue("readTime", value);
+                      setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                        ...prev,
+                        readTime: value,
+                        }));
+                        }}
+                  />
+                </FormControl>
+                {/* <FormMessage /> */}
+              </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex gap-5 mt-6 max-sm:flex-wrap">
+            <FormField
+              control={form.control}
+              name="expectedDeliveryDate"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Expected Delivery Date (EDD)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...field}
+                      value={field.value || selectedOrder?.expectedDeliveryDate || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("expectedDeliveryDate", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          expectedDeliveryDate: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="unitPriceDdp"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Unit price DDP</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value || selectedOrder?.unitPriceDdp || ""}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        form.setValue("unitPriceDdp", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          unitPriceDdp: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
+            <FormField
+              control={form.control}
+              name="totalCostDdp"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Total cost DDP</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter planned quantity"
+                      {...field}
+                      value={field.value || selectedOrder?.totalCostDdp || ""}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value); // Parse as a number
+                        form.setValue("totalCostDdp", value); // Set the value as a number
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          totalCostDdp: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="unitPriceCip"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Unit price CIP</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter revised quantity"
+                      {...field}
+                      value={field.value || selectedOrder?.unitPriceCip || ""}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        form.setValue("unitPriceCip", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          unitPriceCip: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex gap-5 mt-6 max-sm:flex-wrap">
             
-      <FormField
-        control={form.control}
-        name="orderQuantity"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel>Order Quantity</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                placeholder="Enter order quantity"
-                {...field}
-                value={field.value || selectedOrder?.orderQuantity || 0}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  form.setValue("orderQuantity", value);
-                  setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                    ...prev,
-                    orderQuantity: value,
-                  }));
-                }}
-                disabled
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
 
-     <FormField
-      control={form.control}
-      name="receivedQuantity"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>Recieved quantity</FormLabel>
-          <FormControl>
-            <Input
-              type="number"
-              placeholder="Enter received quantity"
-              {...field}
-              value={field.value || selectedOrder?.receivedQuantity || ""}
-              onChange={(e) => {
-                const value = parseInt(e.target.value)
-                form.setValue("receivedQuantity", value);
-                setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                  ...prev,
-                  receivedQuantity: value,
-                }));
-              }}
+            <FormField
+              control={form.control}
+              name="totalCostCip"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Total cost CIP</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter Total cost CIP"
+                      {...field}
+                      value={field.value || selectedOrder?.totalCostCip || ""}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        form.setValue("totalCostCip", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          totalCostCip: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter unit cost"
+                      {...field}
+                      value={field.value || selectedOrder?.currency || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("currency", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          currency: value,
+                          }));
+                          }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
 <FormField
-      control={form.control}
-      name="receivedDate"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>Recieved date</FormLabel>
-          <FormControl>
-            <Input
-              type="date"
-              placeholder="Enter received date"
-              {...field}
-              value={field.value || selectedOrder?.receivedDate || ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                form.setValue("receivedDate", value);
-                setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                  ...prev,
-                  receivedDate: value,
-                }));
-              }}
+              control={form.control}
+              name="orderQuantity"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Order Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter order quantity"
+                      {...field}
+                      value={field.value || selectedOrder?.orderQuantity || 0}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        form.setValue("orderQuantity", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          orderQuantity: value,
+                        }));
+                      }}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
 
-    {/* parseFloat */}
-
-    <FormField
-      control={form.control}
-      name="balancedQuantity"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>Balanced quantity</FormLabel>
-          <FormControl>
-            <Input
-              type="number"
-              placeholder="Enter balance quantity"
-              {...field}
-              value={field.value || selectedOrder?.balancedQuantity || ""}
-              onChange={(e) => {
-                const value = parseInt(e.target.value);
-                form.setValue("balancedQuantity", value);
-                setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                  ...prev,
-                  balancedQuantity: value,
-                }));
-              }}
+            <FormField
+              control={form.control}
+              name="receivedQuantity"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Recieved quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter received quantity"
+                      {...field}
+                      value={field.value || selectedOrder?.receivedQuantity || ""}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value)
+                        form.setValue("receivedQuantity", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          receivedQuantity: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-<FormField
-  control={form.control}
-  name="shipmentStatus"
-  render={({ field }) => (
-    <FormItem className="w-full">
-      <FormLabel>Shipment status</FormLabel>
-      <FormControl>
-        <select
-          {...field}
-          value={field.value || selectedOrder?.shipmentStatus || ""}
-          onChange={(e) => {
-            const value = e.target.value as ShipmentStatus;
-            form.setValue("shipmentStatus", value);
-            setSelectedOrder((prev: PurchaseOrderDetails) => ({
-              ...prev,
-              shipmentStatus: value,
-            }));
-          }}
-        >
-          <option value="ORDERED">ORDERED</option>
-          <option value="PLANNED">PLANNED</option>
-          <option value="CANCELLED">CANCELLED</option>
-          <option value="RECEIVED">RECEIVED</option>
-          <option value="HOLD">HOLD</option>
-          <option value="PARTIAL RECEIVED">PARTIAL RECEIVED</option>
-        </select>
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+          </div>
 
-
-
-
-<FormField
-      control={form.control}
-      name="comments"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>Comments</FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              placeholder="Enter comments"
-              {...field}
-              value={field.value || selectedOrder?.comments || ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                form.setValue("comments", value);
-                setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                  ...prev,
-                  comments: value,
-                }));
-              }}
+          <div className="flex gap-5 mt-6 max-sm:flex-wrap">
+            <FormField
+              control={form.control}
+              name="receivedDate"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Recieved date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      placeholder="Enter received date"
+                      {...field}
+                      value={field.value || selectedOrder?.receivedDate || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("receivedDate", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          receivedDate: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+
+            {/* parseFloat */}
+            <FormField
+              control={form.control}
+              name="balancedQuantity"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Balanced quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter balance quantity"
+                      {...field}
+                      value={field.value || selectedOrder?.balancedQuantity || ""}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        form.setValue("balancedQuantity", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          balancedQuantity: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="shipmentStatus"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Shipment status</FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      value={field.value || selectedOrder?.shipmentStatus || ""}
+                      onChange={(e) => {
+                        const value = e.target.value as ShipmentStatus;
+                        form.setValue("shipmentStatus", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          shipmentStatus: value,
+                        }));
+                      }}
+                    >
+                      <option value="ORDERED">ORDERED</option>
+                      <option value="PLANNED">PLANNED</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                      <option value="RECEIVED">RECEIVED</option>
+                      <option value="HOLD">HOLD</option>
+                      <option value="PARTIAL RECEIVED">PARTIAL RECEIVED</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="comments"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Comments</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter comments"
+                      {...field}
+                      value={field.value || selectedOrder?.comments || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        form.setValue("comments", value);
+                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
+                          ...prev,
+                          comments: value,
+                        }));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
           <Button
             type="submit"
             className="bg-[#7201FD] hover:bg-[#430194] px-12 py-3 rounded-[10px] text-white mt-6"

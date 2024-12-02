@@ -299,6 +299,15 @@ import { calculateDeliveryStatus } from "@/lib/utils";
                 </div>
               </div>
             </div>
+
+            <div className="mt-8">
+                <Button
+                  onClick={() => router.push(`/reviews/new?orderId=${data?.id}`)}
+                  className="bg-[#7201FD] hover:bg-[#430194] px-6 py-3 rounded-[10px] text-white"
+                >
+                  Evaluate
+                </Button>
+            </div>
           </article>
 
           <article>
