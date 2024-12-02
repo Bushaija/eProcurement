@@ -37,9 +37,13 @@ const PURCHASE_ORDER_OPTIONS = [
     const [selectedOrderID, setSelectedOrderID] = useState<number>();
     const [isDeletingOrder, setIsDeletingOrder] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
-
-    const { data, isPending, error, refetch } = useGetPurchaseOrders()
     const { mutate} = useDeletePurchaseOrder(selectedOrderID);
+
+    const purchaseOrdersQuery = useGetPurchaseOrders()
+    const data = purchaseOrdersQuery.data || [];
+    const isPending = purchaseOrdersQuery.isPending || purchaseOrdersQuery.isLoading;
+    const error = purchaseOrdersQuery.error;
+    
   
     if (isPending) {
       return (
@@ -312,14 +316,16 @@ const PURCHASE_ORDER_OPTIONS = [
     };
 
     const handleDeletePurchaseOrder = () => {
+      setIsDeletingOrder(true);
       mutate(undefined, {
         onSuccess: () => {
-          refetch();
+          purchaseOrdersQuery.refetch();
           messageApi.open({
             type: "success",
             content: "Purchase order deleted successfully",
           });
           setIsModalOpen(false);
+          setIsDeletingOrder(false);
         },
         onError: (err) => {
           messageApi.open({

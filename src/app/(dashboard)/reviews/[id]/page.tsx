@@ -7,7 +7,6 @@ import {
 } from "@/assets/icons/icons";
 import { Button } from "@/components/ui/button";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
-import { useQuery } from "@tanstack/react-query";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
 import { Loader2, PencilIcon, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -46,7 +45,7 @@ import { useState } from "react";
     const router = useRouter();
     const params = useParams();
 
-    const { data, isPending, error} = useGetPurchaseOrderReview(Number(params.id));
+    const { data, isPending, error, refetch} = useGetPurchaseOrderReview(Number(params.id));
   
     const items: MenuProps["items"] = [
       {
@@ -101,13 +100,14 @@ import { useState } from "react";
         method: "DELETE",
       })
         .then((res) => {
-          router.push("/");
+          refetch()
           messageApi.open({
             type: "success",
             content: "Order deleted successfully",
           });
           setIsModalOpen(false);
           setIsDeletingOrder(false);
+          router.push("/reviews")
         })
         .catch((err) => {
           messageApi.open({

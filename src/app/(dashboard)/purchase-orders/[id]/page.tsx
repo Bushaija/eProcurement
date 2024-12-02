@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 import { useDeletePurchaseOrder } from "@/features/purchase-orders/api/use-delete-order";
 import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
+import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-orders";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
 import { Loader2, PencilIcon, SearchCheck, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -23,6 +24,7 @@ import { useState } from "react";
     const router = useRouter();
     const params = useParams();
 
+    const { refetch } = useGetPurchaseOrders();
     const { mutate} = useDeletePurchaseOrder(Number(params.id));
   
     const items: MenuProps["items"] = [
@@ -93,25 +95,30 @@ import { useState } from "react";
     }
   
     const handleDeletePurchaseOrder = () => {
+      setIsDeletingOrder(true);
+    
       mutate(undefined, {
         onSuccess: () => {
+          refetch();
           messageApi.open({
             type: "success",
             content: "Purchase order deleted successfully",
           });
           setIsModalOpen(false);
-          setIsDeletingOrder(false);
         },
         onError: (err) => {
-          router.push("/");
           messageApi.open({
             type: "error",
             content: err.message || "An error occurred while deleting the purchase order.",
           });
+        },
+        onSettled: () => {
           setIsDeletingOrder(false);
+          router.push("/purchase-orders");
         },
       });
     };
+    
 
     return (
       <>
