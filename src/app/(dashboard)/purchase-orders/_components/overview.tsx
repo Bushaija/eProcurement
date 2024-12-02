@@ -27,9 +27,9 @@ export default function overview() {
                 <PurchaseOrdersPage />
             </TabsContent>
             
-            <TabsContent value="analytics" className="space-y-4">
+            {/* <TabsContent value="analytics" className="space-y-4">
                 <AnalyticsPage/>
-            </TabsContent>
+            </TabsContent> */}
         </Tabs>
     </PageContainer>
   )
