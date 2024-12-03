@@ -1,4 +1,3 @@
-import { useRouter} from 'next/navigation';
 import { Separator } from "@/components/ui/separator";
 import React from 'react';
 import { calculateDeliveryStatus } from '@/lib/utils';
@@ -26,8 +25,7 @@ export interface OrderDetailsProps {
     };
   }
 
-export const PODetails: React.FC<OrderDetailsProps> = ({ data }) => {
-    const router = useRouter();
+export const OrderDetailsComponent: React.FC<OrderDetailsProps> = ({ data }) => {
 
     const msg = data?.plannedDeliveryDate 
     ? calculateDeliveryStatus(data.plannedDeliveryDate)

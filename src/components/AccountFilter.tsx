@@ -13,6 +13,7 @@ import {
     useSearchParams
 } from "next/navigation";
 import qs from "query-string";
+import { Suspense } from "react";
 
 const sections = [
     {
@@ -51,7 +52,7 @@ export const AccountFilter = () => {
             query,
         },{ skipNull: true, skipEmptyString: true });
 
-        router.push(url)
+        router.push(url);
     }
 
 
@@ -61,7 +62,7 @@ export const AccountFilter = () => {
             value={sectionId}
             onValueChange={onChange}
         >
-            <SelectTrigger className="w-[250px] h-9 rounded-md px-3 font-normal bg-[#f9f5f9] hover:bg-white hover:text-[] border-none focus:ring-offset-0 border-2 focus:ring-transparent text-[#94A3B5] focus:bg-white/30 transition z-50 border-black">
+            <SelectTrigger className="w-[250px] h-9 rounded-md px-3 font-normal bg-[#f9f5f9] hover:bg-white border-none focus:ring-offset-0 border-2 focus:ring-transparent text-[#94A3B5] focus:bg-white/30 transition z-50 border-black">
                 <SelectValue placeholder="Planning" />
             </SelectTrigger>
             <SelectContent>

@@ -5,7 +5,6 @@ import {
   ModalTrashIcon,
   ThreeDotsMenuIcon,
 } from "@/assets/icons/icons";
-import { PODetails } from "@/components/Details";
 import { Button } from "@/components/ui/button";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
