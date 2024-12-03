@@ -5,6 +5,7 @@ import {
   ModalTrashIcon,
   ThreeDotsMenuIcon,
 } from "@/assets/icons/icons";
+import { PODetails } from "@/components/Details";
 import { Button } from "@/components/ui/button";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 import { Dropdown, MenuProps, Modal, Skeleton, message } from "antd";
@@ -132,6 +133,7 @@ import { useState } from "react";
             <span className="text-[#2D3339] font-semibold">Back</span>
           </button>
         </div>
+
         <div className="bg-white rounded-[10px] mt-10 p-6">
           <div className="flex items-center w-full justify-between">
             <p className="text-[#2B2829] text-xl font-semibold">
@@ -288,6 +290,8 @@ import { useState } from "react";
 
 
           </div>
+
+          
         </div>
         <Modal
           closeIcon={null}

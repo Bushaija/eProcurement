@@ -21,6 +21,15 @@ import { Modal, message } from "antd";
 import { useState } from "react";
 import { useCreatePurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-create-review";
 import { PurchaseOrderReviewStatus } from "@/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { PODetails } from "@/components/Details";
+import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
 
 interface CreatePurchaseOrderReviewProps {}
 
@@ -50,13 +59,17 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
   const { mutate, isPending } = useCreatePurchaseOrderReview();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage(); 
+  const params = useParams()
   const searchParams = useSearchParams()
   const purchaseOrderId = searchParams.get("orderId");
+
 
   const [creationDate, setCreationDate] = useState(
     new Date().toISOString().split("T")[0] 
   );
+
+  const { data } = useGetPurchaseOrder(Number(purchaseOrderId));
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -133,16 +146,16 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           <span className="text-[#2D3339] font-semibold">Back</span>
         </button>
       </div>
-      <div className="bg-white rounded-[10px] mt-10 p-6 max-sm:mt-4">
-        <p className="text-[#2B2829] text-xl mb-2 font-semibold">
+      <div className="bg-white rounded-[10px] mt-4 p-4 max-sm:mt-2">
+        <p className="text-[#2B2829] text-xl font-semibold">
           Create New Purchase Order Review 
         </p>
-        <div className="bg-white rounded-[10px] mt-4 p-6 max-sm:mt-8">
+        <main className="flex items-start justify-center gap-4 bg-white rounded-[10px] mt- p-2 max-sm:mt-4">
  
 
-  <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="">
-    <div className="flex gap-5 mt-6 max-sm:flex-wrap">
+  <Form {...form} >
+    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-center item -center w-full">
+    <div className="flex flex-col gap-5 mt-2 max-sm:flex-wrap">
         {/* <FormField
           control={form.control}
           name="purchaseOrderId"
@@ -162,6 +175,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             </FormItem>
           )}
         /> */}
+        <div className="flex items-center justify-center gap-4">
         <FormField
           control={form.control}
           name="purchaseOrderId"
@@ -217,7 +231,18 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />    
 
+</div>
+
        
+       
+
+        
+
+
+</div>
+<div className="flex flex-col gap-5 mt-6 max-sm:flex-wrap">
+
+       <div className="flex items-center justify-center gap-4">
         <FormField
           control={form.control}
           name="purchaseOrderIssueDate"
@@ -231,15 +256,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             </FormItem>
           )}
         />
-
-        
-
-
-</div>
-<div className="flex gap-5 mt-6 max-sm:flex-wrap">
-
-       
-
 
 
         <FormField
@@ -270,6 +286,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />
 
+</div>
+<div className="flex items-center justify-center gap-4">
+
         <FormField
           control={form.control}
           name="totalCostCip"
@@ -299,11 +318,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />
 
-</div>
-<div className="flex gap-5 mt-6 max-sm:flex-wrap">
-
-        
-
         <FormField
           control={form.control}
           name="orderQuantity"
@@ -317,6 +331,15 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             </FormItem>
           )}
         />
+
+        </div>
+
+</div>
+<div className="flex gap-5 mt-6 max-sm:flex-wrap">
+
+        
+<div className="w-full flex items-center justify-center gap-4">
+        
 
 <FormField
           control={form.control}
@@ -348,13 +371,31 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
   )}
 />
 
+<FormField
+  control={form.control}
+  name="readTime"
+  render={({ field }) => (
+    <FormItem className="w-full">
+      <FormLabel>Read time</FormLabel>
+      <FormControl>
+        <Input type="date" placeholder="Enter the read time" {...field} min={new Date().toISOString().split("T")[0]} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
 </div>
-            <p className="text-[#2B2829] mb-10 mt-10 text-xl font-semibold">
+
+
+</div>
+            <p className="text-[#2B2829] my-4 text-xl font-semibold">
               Quantity and Cost Details
             </p>
-            <div className="flex gap-5 max-sm:flex-wrap">
+            <div className="flex flex-col gap-4">
 
+
+<div className="flex items-center justify-center gap-4">
             <FormField
   control={form.control}
   name="readTime"
@@ -387,7 +428,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />
 
-<FormField
+{/* <FormField
   control={form.control}
   name="shipmentStatus"
   render={({ field }) => (
@@ -411,7 +452,41 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
       <FormMessage />
     </FormItem>
   )}
-/>
+/> */}
+
+              <FormField
+                control={form.control}
+                name="shipmentStatus"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Shipment status</FormLabel>
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          
+                            <SelectItem value="ORDERED">ORDERED</SelectItem>
+                            <SelectItem value="PLANNED">PLANNED</SelectItem>
+                            <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+                            <SelectItem value="RECEIVED">RECEIVED</SelectItem>
+                            <SelectItem value="HOLD">HOLD</SelectItem>
+                            <SelectItem value="PARTIAL RECEIVED">PARTIAL RECEIVED</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+
+</div>
+
+<div className="flex items-center justify-center gap-4">
 
 
         <FormField
@@ -427,6 +502,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             </FormItem>
           )}
         />
+</div>
       </div>
 
 
@@ -439,7 +515,10 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
     
     </form>
   </Form>
-</div>
+  <section className="w-full">
+    <PODetails data={data}/>
+  </section>
+</main>
 
       </div>
       <Modal
