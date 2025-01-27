@@ -56,30 +56,18 @@ const FormSchema = z.object({
 });
 
 const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProps> = () => {
-  const { mutate, isPending } = useCreatePurchaseOrderReview();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [creationDate, setCreationDate] = useState(
+    new Date().toISOString().split("T")[0] 
+  );
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage(); 
   const params = useParams()
   const searchParams = useSearchParams()
+  const { mutate, isPending } = useCreatePurchaseOrderReview();
   const purchaseOrderId = searchParams.get("orderId");
-
-
-  const [creationDate, setCreationDate] = useState(
-    new Date().toISOString().split("T")[0] 
-  );
-
   const { isPending: isLoading, data } = useGetPurchaseOrder(Number(purchaseOrderId));
-
-  if (isLoading || isPending ) {
-    return (
-        <Skeleton
-          className="py-5 px-5 max-sm:px-0"
-          active
-          paragraph={{ rows: 6 }}
-        />
-    );
-  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -105,6 +93,16 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         comments: "",
     },
   });
+
+  if (isLoading || isPending ) {
+    return (
+        <Skeleton
+          className="py-5 px-5 max-sm:px-0"
+          active
+          paragraph={{ rows: 6 }}
+        />
+    );
+  }
 
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
@@ -519,6 +517,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
       <Button
         className="bg-[#7201FD] mt-4 hover:bg-[#430194] px-12 py-3 rounded-[10px] text-white"
         type="submit"
+        disabled={isPending}
         >
             Save
         </Button>

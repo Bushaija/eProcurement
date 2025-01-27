@@ -83,14 +83,14 @@ const FormSchema = z.object({
 });
 
 const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = () => {
-  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
   const [plannedOrderDate, setPlannedOrderDate] = useState(
     new Date().toISOString().split("T")[0] 
   );
-
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
   const { mutate, isPending } = useCreatePurchaseOrder();
+
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
