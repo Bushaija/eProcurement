@@ -174,6 +174,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
+            <p className="text-[#2B2829] my-4 text-lg font-semibold">
+              Technical Specification
+            </p>
             <div className="flex gap-5 max-sm:flex-wrap">
               {/* Item Category */}
               <FormField
@@ -204,6 +207,29 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                   </FormItem>
                 )}
               />
+
+              {/* Pack Size */}
+              <FormField
+                control={form.control}
+                name="packSize"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Pack Size</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter pack size" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              
+      </div>
+      <p className="text-[#2B2829] my-4 text-lg font-semibold">
+        Logistics Details
+      </p>
+      <div className="flex flex-col mt-3 max-sm:flex-wrap w-full">
+      <div className="flex gap-5 max-sm:flex-wrap">
 
               <FormField
                 control={form.control}
@@ -239,25 +265,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                     </FormItem>
                   );
                 }}
-              />
-      </div>
-      <div className="flex gap-5 mt-3 max-sm:flex-wrap">
-
-              
-
-              {/* Pack Size */}
-              <FormField
-                control={form.control}
-                name="packSize"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Pack Size</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter pack size" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
               />
 
               {/* Planned Order Date */}
@@ -295,23 +302,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                   </FormItem>
                 )}
               />
-
       </div>
-      <div className="flex gap-5 mt-6 max-sm:flex-wrap w-[370px]">
-
-              {/* Planned Delivery Date */}
-            
-
-
-      </div>
-                  <p className="text-[#2B2829] my-4 text-lg font-semibold">
-                    Quantity and Cost Details
-                  </p>
-                  <div className="flex gap-5 max-sm:flex-wrap ">
-
-
-              {/* Planned Quantity */}
-              <FormField
+            {/* Planned Quantity */}
+            <FormField
                 control={form.control}
                 name="plannedQuantity"
                 render={({ field }) => (
@@ -319,6 +312,64 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                     <FormLabel>Planned Quantity</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="Enter planned quantity" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+      </div>
+                  <p className="text-[#2B2829] my-4 text-lg font-semibold">
+                    Financial and Funding Details
+                  </p>
+              
+              
+                  <div className="flex gap-5 max-sm:flex-wrap ">
+
+                  {/* Unit Cost (USD) */}
+              <FormField
+                control={form.control}
+                name="unitCost"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Unit Cost (USD)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="Enter unit cost in USD" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Total Cost (USD) */}
+              <FormField
+                control={form.control}
+                name="totalCost"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Total Cost (USD)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Total estimated cost in USD"
+                        disabled
+                        {...field}
+                        value={String(Number(form.getValues("unitCost")) * Number(form.getValues("plannedQuantity")))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Funding Source */}
+              <FormField
+                control={form.control}
+                name="fundingSource"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Funding Source</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter funding source" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -355,60 +406,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                 )}
               /> */}
             </div>
-
-            <div className="flex gap-5 mt-6 max-sm:flex-wrap">
-              {/* Unit Cost (USD) */}
-              <FormField
-                control={form.control}
-                name="unitCost"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Unit Cost (USD)</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Enter unit cost in USD" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Total Cost (USD) */}
-              <FormField
-                control={form.control}
-                name="totalCost"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Total Cost (USD)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Total estimated cost in USD"
-                        disabled
-                        {...field}
-                        value={String(Number(form.getValues("unitCost")) * Number(form.getValues("plannedQuantity")))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Funding Source */}
-              <FormField
-                control={form.control}
-                name="fundingSource"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Funding Source</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter funding source" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
             <Button
               className="bg-[#7201FD] hover:bg-[#430194] px-12 py-3 rounded-[10px] text-white mt-4"
               type="submit"
