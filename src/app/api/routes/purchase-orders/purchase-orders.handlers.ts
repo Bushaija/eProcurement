@@ -4,12 +4,11 @@ import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
 import { db } from "@/db";
 import { purchaseOrderTable } from "@/db/schema";
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./purchase-orders.route";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, UploadCSV } from "./purchase-orders.route";
 import type { AppRouteHandler } from "../../lib/types";
 
 
 export const list: AppRouteHandler<ListRoute> = async (c)=> {
-    // const purchaseOrders = await db.query.purchaseOrderTable.findMany()
     const purchaseOrders = await db
         .select().from(purchaseOrderTable);
     return c.json(purchaseOrders);
@@ -39,7 +38,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c)=> {
 
     return c.json(purchaseOrder, 200);
 };
-
 
 export const patch: AppRouteHandler<PatchRoute> = async (c)=> {
     const { id } = c.req.valid("param");
@@ -73,3 +71,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c)=> {
     return c.body(null, HttpStatusCodes.NO_CONTENT)
 
 };
+
+export const uploadCSV: AppRouteHandler<UploadCSV> = async (c) => {
+    const purchaseOrders = c.req.parseBody();
+}

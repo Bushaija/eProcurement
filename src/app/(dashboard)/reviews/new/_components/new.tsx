@@ -109,7 +109,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
       const newPurchaseOrderReview = {
-        purchaseOrderId: Number(data.purchaseOrderId), // Ensure this is a number
+        purchaseOrderId: Number(data.purchaseOrderId),
         purchaseOrderCreationDate: data.purchaseOrderCreationDate || null,
         purchaseOrderNumber: data.purchaseOrderNumber || "",
         purchaseOrderIssueDate: data.purchaseOrderIssueDate || null,

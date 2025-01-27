@@ -27,6 +27,7 @@ export const purchaseOrderTable = pgTable("purchase_order", {
   createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow(),
 });
+// category,plannedUnit,allocationDepartment,packSize,plannedOrderDate,plannedDeliveryDate,plannedQuantity,revisedQuantity,secondReview,unitCost,totalCost,fundingSource, status
 
 // purchase order review table
 
@@ -43,11 +44,11 @@ export const purchaseOrderReviewTable = pgTable("purchase_order_review", {
   unitPriceCip: doublePrecision("unit_price_cip").default(0),
   totalCostCip: doublePrecision("total_cost_cip").default(0),
   currency: varchar("currency", { length: 100 }).default('USD'),
-  orderQuantity: integer("order_quantity").notNull().default(0),
+  orderQuantity: integer("order_quantity").default(0),
   receivedQuantity: integer("received_quantity", ).default(0),
   receivedDate: date("received_date"),
   balancedQuantity: integer("balanced_quantity").default(0),
-  shipmentStatus: shipmentEnum().default("PLANNED"),
+  shipmentStatus: shipmentEnum("shipment_status").default("PLANNED"),
   comments: text("comments"),
   createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow(),
@@ -130,3 +131,9 @@ export type TSelectPurchaseOrderReviewSchema = zod.infer<typeof selectPurchaseOr
 
 // // Infer the type for the array
 // export type TSelectPurchaseOrdersArraySchema = zod.infer<typeof selectPurchaseOrdersArraySchema>;
+
+
+// fixing table
+
+export type PurchaseOrder = typeof purchaseOrderTable.$inferSelect
+export type NewPurchaseOrder = typeof purchaseOrderTable.$inferInsert

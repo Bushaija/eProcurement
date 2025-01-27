@@ -1,5 +1,14 @@
 import { NavItem } from "@/types";
 
+export const chartData = [
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
+];
+
 export const navItems: NavItem[] = [
     {
       title: 'Dashboard',
@@ -22,6 +31,14 @@ export const navItems: NavItem[] = [
       url: '/reviews',
       icon: 'product',
       shortcut: ['p', 'p'],
+      isActive: false,
+      items: [] // No child items
+    },
+    {
+      title: 'Analytics',
+      url: '/analytics',
+      icon: 'product',
+      shortcut: ['a', 'a'],
       isActive: false,
       items: [] // No child items
     },

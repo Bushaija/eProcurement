@@ -11,7 +11,8 @@ import {
   getSortedRowModel,
   useReactTable,
   ColumnFiltersState, 
-  getFilteredRowModel
+  getFilteredRowModel,
+  PaginationState
 } from "@tanstack/react-table";
 
 import { Card } from '@/components/ui/card';
@@ -27,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Options } from 'nuqs';
 
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -49,8 +51,18 @@ import {
   CommandShortcut,
 } from "@/components/ui/command"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { CheckIcon, PlusCircleIcon } from "lucide-react";
+import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, PlusCircleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { parseAsInteger, useQueryState } from 'nuqs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons";
+
 
 
 interface FilterOptions {
@@ -62,11 +74,26 @@ interface FilterOptions {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  totalItems: number;
+  pageSizeOptions?: number[];
+
   rowClick?: (id: string) => void;
-  searchBy?: string;
+  // searchBy?: string;
+  // searchByTitle?: string;
   filterTitle?: string;
   options?: FilterOptions[];
   filterValue?: string;
+
+  searchKey: string;
+  searchQuery: string;
+  setSearchQuery: (
+    value: string | ((old: string) => string | null) | null,
+    options?: Options<any> | undefined
+  ) => Promise<URLSearchParams>;
+  setPage: <Shallow>(
+    value: number | ((old: number) => number | null) | null,
+    options?: Options<Shallow> | undefined
+  ) => Promise<URLSearchParams>;
 }
 
 const GENDER_OPTIONS = [
@@ -77,13 +104,24 @@ const GENDER_OPTIONS = [
 export function DataTable<TData, TValue>({
   columns,
   data,
+  totalItems,
+  pageSizeOptions = [10, 20, 30, 40, 50],
+
+
   rowClick,
   filterTitle,
-  searchBy,
+  // searchBy,
+  // searchByTitle,
   options,
-  filterValue
+  filterValue,
+
+  searchKey,
+  searchQuery,
+  setSearchQuery,
+  setPage
   
 }: DataTableProps<TData, TValue>) {
+  const [isLoading, startTransition] = React.useTransition();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -94,9 +132,49 @@ export function DataTable<TData, TValue>({
     new Set(filterValue ? filterValue.split('.') : [])
   );
 
+  const [currentPage, setCurrentPage] = useQueryState(
+    'page',
+    parseAsInteger.withOptions({ shallow: false }).withDefault(1)
+  );
+
+  const [pageSize, setPageSize] = useQueryState(
+    'limit',
+    parseAsInteger
+      .withOptions({ shallow: false, history: 'push' })
+      .withDefault(10)
+  );
+
+  const paginationState = {
+    pageIndex: currentPage - 1, // zero-based index for React Table
+    pageSize: pageSize
+  };
+
+  const pageCount = Math.ceil(totalItems / pageSize);
+
+  const handlePaginationChange = (
+    updaterOrValue:
+      | PaginationState
+      | ((old: PaginationState) => PaginationState)
+  ) => {
+    const pagination =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(paginationState)
+        : updaterOrValue;
+
+    setCurrentPage(pagination.pageIndex + 1); // converting zero-based index to one-based
+    setPageSize(pagination.pageSize);
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value, { startTransition });
+    setPage(1); // Reset page to 1 when search changes
+  };
+
   const table = useReactTable({
     data,
     columns,
+    pageCount: pageCount,
+    onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -106,7 +184,10 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+      pagination: paginationState
     },
+    manualPagination: true,
+    manualFiltering: true
   });
 
   // const selectedValuesSet = React.useMemo(() => {
@@ -142,19 +223,26 @@ export function DataTable<TData, TValue>({
   <div className="space-y-4">
     
     <Card className="outline-none border-none">
-      <div className="rounded-md p-4 bg-white flex gap-4">
-        {
+      <div className="rounded-md p-4 bg-white flex flex-col gap-4">
+        <section className="flex gap-8 px-4">
+        <Input
+          placeholder={`Search ${searchKey}...`}
+          value={searchQuery ?? ''}
+          onChange={(e) => handleSearch(e.target.value)}
+          className={cn('w-full md:max-w-sm', isLoading && 'animate-pulse')}
+        />
+        {/* {
           searchBy && (
             <Input
-              placeholder={`Filter by ${searchBy}...`}
-              value={(table.getColumn(searchBy ? searchBy : "")?.getFilterValue() as string) ?? ""}
+              placeholder={`Search by ${searchByTitle}...`}
+              value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
               onChange={(event) =>
                 table.getColumn(searchBy || "")?.setFilterValue(event.target.value)
               }
-              className={"rounded-md w-[250px] h-[36px]"}
+              className={"rounded-md w-[350px] h-[36px]"}
             />
           )
-        }
+        } */}
        { 
         filterTitle &&
         <Popover>
@@ -219,9 +307,10 @@ export function DataTable<TData, TValue>({
               </CommandList>
             </Command>
           </PopoverContent>
-        </Popover>}
-      </div>
-      <div className="rounded-md px-4 bg-white">
+        </Popover>
+        }
+        </section>
+        <div className="rounded-md px-4 bg-white">
       <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)] ">
         <Table>
           <TableHeader>
@@ -279,72 +368,101 @@ export function DataTable<TData, TValue>({
         </Table>
         <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex items-center space-x-2 px-4">
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            First
-          </Button> */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            Last
-          </Button> */}
         </div>
-        {/* <span className="text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-        </span>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm">Go to page:</span>
-          <input
-            type="number"
-            min={1}
-            max={table.getPageCount()}
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="w-16 p-1 border rounded"
-          />
-        </div> */}
-        {/* <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-          className="p-1 border rounded"
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select> */}
+        <div className="flex flex-col items-center justify-end gap-2 space-x-2 p-4 sm:flex-row">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex-1 text-sm text-muted-foreground">
+            {totalItems > 0 ? (
+              <>
+                Showing{' '}
+                {paginationState.pageIndex * paginationState.pageSize + 1} to{' '}
+                {Math.min(
+                  (paginationState.pageIndex + 1) * paginationState.pageSize,
+                  totalItems
+                )}{' '}
+                of {totalItems} entries
+              </>
+            ) : (
+              'No entries found'
+            )}
+          </div>
+          
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
+            <div className="flex items-center space-x-2">
+              <p className="whitespace-nowrap text-sm font-medium">
+                Rows per page
+              </p>
+              <Select
+                value={`${paginationState.pageSize}`}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value));
+                }}
+              >
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue placeholder={paginationState.pageSize} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {pageSizeOptions.map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+        </div>
+        <div className="flex w-full items-center justify-between gap-2 sm:justify-end">
+          <div className="flex w-[150px] items-center justify-center text-sm font-medium">
+            {totalItems > 0 ? (
+              <>
+                Page {paginationState.pageIndex + 1} of {table.getPageCount()}
+              </>
+            ) : (
+              'No pages'
+            )}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              aria-label="Go to first page"
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <DoubleArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              aria-label="Go to previous page"
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              aria-label="Go to next page"
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              aria-label="Go to last page"
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <DoubleArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        </div>
+        </div>  
       </div>
     </Card>
   </div>

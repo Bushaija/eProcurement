@@ -119,6 +119,35 @@ export const remove = createRoute({
     },
 });
 
+/*
+request: {
+        body: jsonContentRequired(
+            insertPurchaseOrderSchema,
+            "The purchase order to create",
+        ),
+    },
+*/
+
+export const uploadCSV = createRoute({
+    path: "/orders/upload",
+    method: "post",
+    tags,
+    request: {
+      body: jsonContentRequired(
+        z.array(insertPurchaseOrderSchema),
+        "purchase order csv file uploaded"
+      )
+    },
+    responses: {
+      200: jsonContent(
+        selectPurchaseOrdersSchema,
+        "The uploaded purchase order csv file."
+      )
+    },
+  });
+  
+export type UploadCSV = typeof uploadCSV;
+
 export type ListRoute = typeof list;
 
 export type CreateRoute = typeof create;

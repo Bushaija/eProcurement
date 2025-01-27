@@ -22,6 +22,12 @@ const routes = [
     disabled: false,
     icon: <PurchaseOrderIcon />
   },
+  {
+    href: "/analytics",
+    label: "Analytics",
+    disabled: false,
+    icon: <AnalyticsIcon />
+  },
   // {
   //   href: "/invoice",
   //   label: "Invoice",

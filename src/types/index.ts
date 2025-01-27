@@ -1,4 +1,32 @@
 import { Icons } from '@/components/icons';
+import type { ColumnSort, Row } from "@tanstack/react-table"
+import { type DataTableConfig } from "@/config/data-table";
+import { type filterSchema } from "@/lib/parsers"
+import { z } from 'zod';
+
+
+// file upload
+
+export interface UploadedFile<T = unknown> {
+  id: string; // Unique identifier for the file
+  name: string; // Original file name
+  size: number; // File size in bytes
+  type: string; // MIME type of the file
+  url: string; // Publicly accessible URL or path to the file
+  metadata?: T; // Additional optional metadata (e.g., user info, tags, etc.)
+  uploadedAt: Date; // Timestamp of upload
+}
+
+
+
+// ====
+
+
+export type TotalCostByQuarter = {
+  quarter: number;
+  totalCost: number;
+};
+
 
 export interface NavItem {
   title: string;
@@ -55,5 +83,53 @@ export interface PurchaseOrderDetails {
   fundingSource: string;
   status: "PLANNED" | "APPROVED" | "REJECTED" | "SUBMITTED" | "COMPLETED"
 }
+
+export interface SearchParams {
+  [key: string]: string | string[] | undefined
+}
+
+
+// doing: fixing the table
+
+export type FilterOperator = DataTableConfig["globalOperators"][number]
+
+export type ColumnType = DataTableConfig["columnTypes"][number]
+
+export type Prettify<T> = {
+  [K in keyof T]: T[K]
+} & {}
+
+export type Filter<TData> = Prettify<
+  Omit<z.infer<typeof filterSchema>, "id"> & {
+    id: StringKeyOf<TData>
+  }
+>
+
+export interface Option {
+  label: string
+  value: string
+  icon?: React.ComponentType<{ className?: string }>
+  count?: number
+}
+
+export interface DataTableRowAction<TData> {
+  row: Row<TData>
+  type: "update" | "delete"
+};
+
+export type StringKeyOf<TData> = Extract<keyof TData, string>
+
+export interface DataTableFilterField<TData> {
+  id: StringKeyOf<TData>
+  label: string
+  placeholder?: string
+  options?: Option[]
+}
+
+export interface ExtendedColumnSort<TData> extends Omit<ColumnSort, "id"> {
+  id: StringKeyOf<TData>
+}
+
+export type ExtendedSortingState<TData> = ExtendedColumnSort<TData>[]
 
 

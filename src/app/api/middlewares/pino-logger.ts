@@ -1,9 +1,11 @@
-import config from "dotenv";
+import { config } from "dotenv";
 import { pinoLogger as logger } from "hono-pino";
 import pino from "pino";
 import pretty from "pino-pretty";
 
-import env from "@/env";
+config({ path: ".env" });
+
+// import env from "@/env";
 
 export function pinoLogger() {
   return logger({

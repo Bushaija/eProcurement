@@ -52,6 +52,8 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
         </Layout>
       );
     }
+
+    console.log("error: ", error);
   
     if (error) {
       messageApi.open({

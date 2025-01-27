@@ -1,7 +1,7 @@
 import {
   ClerkProvider,
 } from '@clerk/nextjs';
-
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -24,7 +24,9 @@ export default function RootLayout({
       <body>
           <KBar>
             <QueryProvider>
-              {children}
+              <NuqsAdapter>
+                {children}
+              </NuqsAdapter>
             </QueryProvider>
           </KBar>
       </body>

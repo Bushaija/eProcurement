@@ -29,20 +29,6 @@ import { calculateDeliveryStatus } from "@/lib/utils";
     const { mutate} = useDeletePurchaseOrder(Number(params.id));
   
     const items: MenuProps["items"] = [
-      // {
-      //   key: "0",
-      //   label: (
-      //     <button
-      //       onClick={() => router.push(`/reviews/edit/${params.id}`)}
-      //       className="flex items-center gap-1"
-      //     >
-      //       <span>
-      //         <SearchCheck className="text-[#667185] h-4" />
-      //       </span>
-      //       <span>Evaluate Order</span>
-      //     </button>
-      //   ),
-      // },
       {
         key: "1",
         label: (
