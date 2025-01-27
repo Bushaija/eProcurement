@@ -164,7 +164,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
       <Card className="mx-auto w-full">
         <CardHeader>
           <CardTitle className="text-left text-lg font-bold">
-            Create new purchase order
+            Create a New Planning Item
           </CardTitle>
         </CardHeader>
         
