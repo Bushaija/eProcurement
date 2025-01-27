@@ -34,7 +34,7 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
   },
   {
     accessorKey: 'plannedUnit',
-    header: 'Medical Item'
+    header: 'Item Name'
   },
   {
     accessorKey: 'status',

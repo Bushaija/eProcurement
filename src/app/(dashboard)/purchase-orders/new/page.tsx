@@ -196,9 +196,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                 name="plannedUnit"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Medical Item</FormLabel>
+                    <FormLabel>Item Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter medical item or planning unit" {...field} />
+                      <Input placeholder="Enter item name or planning unit" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
