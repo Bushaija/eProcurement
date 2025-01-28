@@ -169,7 +169,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
         </CardHeader>
         
         <CardContent>
-        <div className="bg-white rounded-[10px] mt-4 p-4 max-sm:mt-8">
+        <div className="bg-white rounded-[10px] p-4 max-sm:mt-8">
         
 
         <Form {...form}>
@@ -229,7 +229,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
         Logistics Details
       </p>
       <div className="flex flex-col mt-3 max-sm:flex-wrap w-full">
-      <div className="flex gap-5 max-sm:flex-wrap">
+      <div className="flex gap-5 max-sm:flex-wrap mb-2">
 
               <FormField
                 control={form.control}

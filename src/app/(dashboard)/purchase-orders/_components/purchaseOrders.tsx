@@ -22,17 +22,17 @@ import { DataTableFilterBox } from "@/components/table/data-table-filter-box";
 import { DataTableResetFilter } from "@/components/table/data-table-reset-filter";
 import { DataTableExport } from "@/components/table/data-table-export";
 import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel} from "@tanstack/react-table";
-import { CsvImporter } from "@/app/(dashboard)/purchase-orders/_components/csv-importer";
+// import { CsvImporter } from "@/app/(dashboard)/purchase-orders/_components/csv-importer";
 import { formatCsvRows, formatInputData, InputData } from "@/lib/utils";
 
-const PURCHASE_ORDER_OPTIONS = [
-  { value: "ORDERED", label: 'ORDERED'},
-  { value: "PLANNED", label: 'PLANNED'},
-  { value: "CANCELLED", label: 'CANCELLED'},
-  { value: "RECEIVED", label: 'RECEIVED'},
-  { value: "HOLD", label: 'HOLD'},
-  { value: "PARTIAL RECEIVED", label: 'PARTIAL RECEIVED'},
-]
+// const PURCHASE_ORDER_OPTIONS = [
+//   { value: "ORDERED", label: 'ORDERED'},
+//   { value: "PLANNED", label: 'PLANNED'},
+//   { value: "CANCELLED", label: 'CANCELLED'},
+//   { value: "RECEIVED", label: 'RECEIVED'},
+//   { value: "HOLD", label: 'HOLD'},
+//   { value: "PARTIAL RECEIVED", label: 'PARTIAL RECEIVED'},
+// ]
 
 type ImportDataType = Record<string, any>;
 
@@ -223,7 +223,7 @@ type ImportDataType = Record<string, any>;
             table={table}
           />
 
-          <CsvImporter
+          {/* <CsvImporter
             fields={[
               { label: "Category", value: "category", required: true},
               { label: "Medicine", value: "plannedUnit", required: true},
@@ -245,7 +245,7 @@ type ImportDataType = Record<string, any>;
               setImportData((prev) => [...prev, ...formattedData])
             }}
             className="self-end"
-        />
+        /> */}
         </div>
 
       </div>
