@@ -79,6 +79,7 @@ export const purchaseOrderReviewRelations = relations(purchaseOrderReviewTable, 
 export const selectPurchaseOrdersSchema = createSelectSchema(purchaseOrderTable);
 
 export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, {
+  itemType: schema => schema.itemType.min(1).max(500),
   category: schema => schema.category.min(1).max(500),
   plannedUnit: schema => schema.plannedUnit.min(1).max(500),
   allocationDepartment: schema => schema.allocationDepartment.min(1).max(500),
@@ -89,6 +90,7 @@ export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, 
   fundingSource: schema => schema.fundingSource.min(1).max(500),
 })
   .required({
+    itemType: true,
     category: true,
     plannedUnit: true,
     allocationDepartment: true,
