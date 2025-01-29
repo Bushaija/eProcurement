@@ -13,6 +13,7 @@ export const list: AppRouteHandler<ListRoute> = async (c)=> {
         .select()
         .from(purchaseOrderTable)
         .orderBy(desc(purchaseOrderTable.createdAt))
+        console.log("orders:", purchaseOrders);
     return c.json(purchaseOrders);
 };
 
