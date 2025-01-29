@@ -66,27 +66,37 @@ return [
     enableHiding: true,
     },
     {
-    accessorKey: "category",
+        accessorKey: "plannedUnit",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Item Name" />
+        ),
+        cell: ({ row }) => <div className="flex space-x-2">
+            <span className="max-w-[31.25rem] truncate font-medium text-center">
+                {row.original.plannedUnit}
+            </span>
+        </div>,
+        enableSorting: true,
+        enableHiding: true,
+    },
+    {
+    accessorKey: "itemType",
     header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Category" />
+        <DataTableColumnHeader column={column} title="Item Type" />
     ),
-    cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.category}</div>,
+    cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.itemType}</div>,
     enableSorting: true,
     enableHiding: true,
     },
     {
-    accessorKey: "plannedUnit",
-    header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="MedicalItem" />
-    ),
-    cell: ({ row }) => <div className="flex space-x-2">
-        <span className="max-w-[31.25rem] truncate font-medium text-center">
-            {row.original.plannedUnit}
-        </span>
-    </div>,
-    enableSorting: true,
-    enableHiding: true,
+        accessorKey: "category",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Category" />
+        ),
+        cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.category}</div>,
+        enableSorting: true,
+        enableHiding: true,
     },
+    
     {
     accessorKey: "status",
     header: ({ column }) => (

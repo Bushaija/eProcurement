@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
@@ -10,7 +10,9 @@ import type { AppRouteHandler } from "../../lib/types";
 
 export const list: AppRouteHandler<ListRoute> = async (c)=> {
     const purchaseOrders = await db
-        .select().from(purchaseOrderTable);
+        .select()
+        .from(purchaseOrderTable)
+        .orderBy(desc(purchaseOrderTable.createdAt))
     return c.json(purchaseOrders);
 };
 
@@ -72,6 +74,6 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c)=> {
 
 };
 
-export const uploadCSV: AppRouteHandler<UploadCSV> = async (c) => {
-    const purchaseOrders = c.req.parseBody();
-}
+// export const uploadCSV: AppRouteHandler<UploadCSV> = async (c) => {
+//     const purchaseOrders = c.req.parseBody();
+// }

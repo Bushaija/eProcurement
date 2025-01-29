@@ -186,6 +186,12 @@ import { calculateDeliveryStatus } from "@/lib/utils";
             <div className="mt-10 flex flex-col gap-4 flex-wrap">
               <div className="flex gap-8">
                 <div className="flex flex-col text-sm w-[180px]">
+                  <p className="font-semibold text-[#98A2B3]">Item Type </p>
+                  <p className="text-[#40474F] font-medium">
+                    {data?.itemType}
+                  </p>
+                </div>
+                <div className="flex flex-col text-sm w-[180px]">
                   <p className="font-semibold text-[#98A2B3]">Category </p>
                   <p className="text-[#40474F] font-medium">
                     {data?.category}

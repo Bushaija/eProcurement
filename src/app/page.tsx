@@ -75,6 +75,14 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       },
     },
     {
+      accessorKey: "itemType",
+      header: () => <div className="text-xs font-bold">Item Type</div>,
+      cell: ({ row }) => {
+        return <div className="text-[#40474F]">{row.original.itemType}</div>;
+      },
+      enableColumnFilter: true,
+    },
+    {
       accessorKey: "category",
       header: () => <div className="text-xs font-bold">Category</div>,
       cell: ({ row }) => {
@@ -82,7 +90,6 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       },
       enableColumnFilter: true, // Make sure filtering is enabled for this column
     },
-    
     {
       accessorKey: "PLANNED_ORDER_DATE",
       header: () => <div className="text-xs font-bold">Order Date</div>,
@@ -93,6 +100,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
           </div>
         );
       },
+      
     },
     {
       accessorKey: "PLANNED_DELIVERY_DATE",

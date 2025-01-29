@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
@@ -17,7 +17,9 @@ import {
 export const list: AppRouteHandler<ListRoute> = async (c)=> {
     // const reviews = await db.query.purchaseOrderReviewTable.findMany()
     const reviews = await db
-        .select().from(purchaseOrderReviewTable);
+        .select()
+        .from(purchaseOrderReviewTable)
+        .orderBy(desc(purchaseOrderReviewTable.createdAt))
     return c.json(reviews);
 };
 

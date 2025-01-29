@@ -47,7 +47,7 @@ const FormSchema = z.object({
   unitPriceCip: z.coerce.number(),
   totalCostCip: z.coerce.number(),
   currency: z.string(),
-  orderQuantity: z.coerce.number(),
+  orderQuantity: z.coerce.number().int().positive(),
   receivedQuantity: z.coerce.number(),
   receivedDate: z.string(),
   balancedQuantity: z.coerce.number(),
@@ -79,10 +79,10 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         readTime: "",
         expectedDeliveryDate: "",
 
-        unitPriceDdp: 0,
-        totalCostDdp: 0,
-        unitPriceCip: 0,
-        totalCostCip: 0,
+        unitPriceDdp: 0.0,
+        totalCostDdp: 0.0,
+        unitPriceCip: 0.0,
+        totalCostCip: 0.0,
         
         currency: "USD",
         orderQuantity: 0,
@@ -113,14 +113,16 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         purchaseOrderIssueDate: data.purchaseOrderIssueDate || null,
         readTime: data.readTime || null,
         expectedDeliveryDate: data.expectedDeliveryDate || null,
-        unitPriceDdp: data.unitPriceDdp || 0,
-        totalCostDdp: data.totalCostDdp || 0,
-        unitPriceCip: data.unitPriceCip || 0,
-        totalCostCip: data.totalCostCip || 0,
+        unitPriceDdp: data.unitPriceDdp || 0.0,
+        totalCostDdp: data.totalCostDdp || 0.0,
+        unitPriceCip: data.unitPriceCip || 0.0,
+        totalCostCip: data.totalCostCip || 0.0,
         currency: data.currency || "USD",
         orderQuantity: Number(data.orderQuantity) || 0,
+        receivedQuantity: Number(data.receivedQuantity),
         receivedDate: data.receivedDate || null,
-        balancedQuantity: Number(data.balancedQuantity) || 0,
+        balancedQuantity: Number(data.orderQuantity) - Number(data.receivedQuantity) === Number(data.orderQuantity) ? 
+          0 : Number(data.orderQuantity) - Number(data.receivedQuantity),
         shipmentStatus: data.shipmentStatus as PurchaseOrderReviewStatus,
         comments: data.comments || null,
       };
@@ -273,7 +275,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Total cost (DDP)</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter total cost DDP" {...field} min={0}/>
+                <Input type="number" step={"0.01"} placeholder="Enter total cost DDP" {...field} min={0}/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -287,7 +289,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Unit Price CIP</FormLabel>
               <FormControl>
-                <Input type="number" {...field} min={0} />
+                <Input type="number" step={"0.01"} {...field} min={0.0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -304,7 +306,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Total cost CIP</FormLabel>
               <FormControl>
-                <Input type="number" {...field} min={0} />
+                <Input type="number" step={"0.01"} {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -331,9 +333,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           name="orderQuantity"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel>Order quantity</FormLabel>
+              <FormLabel>Ordered quantity</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter order quantity" {...field} min={0} />
+                <Input type="number"  placeholder="Enter ordered quantity" {...field} min={0} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -427,7 +429,12 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
             <FormItem className="w-full">
               <FormLabel>Balanced quantity</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter planned quantity" {...field} min={0} />
+                <Input 
+                  type="number" 
+                  disabled 
+                  value={Number(form.getValues("orderQuantity")) - Number(form.getValues("receivedQuantity"))}
+                  // placeholder="Enter planned quantity" {...field} min={0} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

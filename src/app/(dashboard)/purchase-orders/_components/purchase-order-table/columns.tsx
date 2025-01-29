@@ -29,6 +29,10 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
     header: 'Purchase Order Number'
   },
   {
+    accessorKey: 'itemType',
+    header: 'Item Type'
+  },
+  {
     accessorKey: 'category',
     header: 'Category'
   },

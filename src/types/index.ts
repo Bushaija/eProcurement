@@ -3,6 +3,9 @@ import type { ColumnSort, Row } from "@tanstack/react-table"
 import { type DataTableConfig } from "@/config/data-table";
 import { type filterSchema } from "@/lib/parsers"
 import { z } from 'zod';
+import { Item } from '@radix-ui/react-select';
+import { it } from 'node:test';
+import { useGetTotalCostByPlannedOrderDate } from '@/features/analytics/api/cost-analysis/use-get-total-cost-by-planned-order-date';
 
 
 // file upload
@@ -20,6 +23,33 @@ export interface UploadedFile<T = unknown> {
 
 
 // ====
+
+
+// metrics
+
+// schemas.ts
+
+// Metrics schema for delay responses
+
+
+export const MetricsSchema = z.array(
+  z.object({
+    itemId: z.number(),
+    itemName: z.string(),
+    itemType: z.string(),
+    category: z.string(),
+    department: z.string(),
+    shipmentStatus: z.string(),
+    plannedOrderDate: z.date(),
+    purchaseOrderCreationDate: z.date(),
+    expectedDeliveryDate: z.date(),
+    receivedDate: z.date(),
+    delay: z.number(),
+  })
+);
+
+
+// =======
 
 
 export type TotalCostByQuarter = {

@@ -33,14 +33,21 @@ import { purchaseOrderStatus } from "@/types";
 interface CreatePurchaseOrderProps {}
 
 const FormSchema = z.object({
+    itemType: z.string({
+      required_error: "Item type is required",
+      invalid_type_error: "Item type must be a string"
+    }).min(2),
+
     category: z.string({
       required_error: "category is required",
       invalid_type_error: "category must be a string"
     }).min(2),
+
     plannedUnit: z.string({
       required_error: "planned unit is required",
       invalid_type_error: "planned unit must be a string"
     }).min(2),
+
     allocationDepartment: z.string({
       required_error: "allocated department is required",
       invalid_type_error: "allocated department must be a string"
@@ -95,6 +102,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      itemType: "",
       category: "", 
       plannedUnit: "", 
       allocationDepartment: "",
@@ -116,6 +124,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const newPurchaseOrder = {
+        itemType: data.itemType,
         category: data.category, 
         plannedUnit: data.plannedUnit,
         allocationDepartment: data.allocationDepartment,
@@ -169,14 +178,38 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
         </CardHeader>
         
         <CardContent>
-        <div className="bg-white rounded-[10px] p-4 max-sm:mt-8">
+        <div className="bg-white rounded-[10px]">
         
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
-            <p className="text-[#2B2829] my-4 text-lg font-semibold">
+            <p className="text-[#2B2829] mb-4 text-lg font-semibold">
               Technical Specification
             </p>
+            <div >
+             <FormField
+                control={form.control}
+                name="itemType"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="my-4 max-w-[386px]">
+                      <FormLabel>Item Type</FormLabel>
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Item Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="BTD">Medical</SelectItem>
+                          <SelectItem value="CS">Non Medical</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             <div className="flex gap-5 max-sm:flex-wrap">
               {/* Item Category */}
               <FormField
@@ -224,6 +257,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
               />
 
               
+      </div>
       </div>
       <p className="text-[#2B2829] my-4 text-lg font-semibold">
         Logistics Details
@@ -308,7 +342,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                 control={form.control}
                 name="plannedQuantity"
                 render={({ field }) => (
-                  <FormItem className="w-[370px]">
+                  <FormItem className="max-w-[386px]">
                     <FormLabel>Planned Quantity</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="Enter planned quantity" {...field} />

@@ -11,6 +11,7 @@ export const shipmentEnum = pgEnum("shipment_status", ['ORDERED', 'PLANNED', 'CA
 
 export const purchaseOrderTable = pgTable("purchase_order", {
   id: serial("id").primaryKey(),
+  itemType: varchar("item_type", { length: 255 }),
   category: varchar("category", { length: 255 }).notNull(),
   plannedUnit: varchar("planned_unit", { length: 255 }).notNull(),
   allocationDepartment: varchar("allocation_department", { length: 255 }).notNull(),
