@@ -72,9 +72,10 @@ type ImportDataType = Record<string, any>;
   
       allocationDepartmentFilter,
       categoryFilter,
-      setCategoryFilter,
+      itemTypeFilter,
+      setItemTypeFilter,
+      // setCategoryFilter,
       setAllocationDepartmentFilter,
-  
       isAnyFilterActive,
       resetFilters
     } = usePurchaseOrderTableFilters();
@@ -106,9 +107,9 @@ type ImportDataType = Record<string, any>;
       { value: 'Admin', label: 'Administration' },
     ];
   
-    const categoryOptions = [
-      { value: 'ARV', label: 'Antiretrovirals' },
-      { value: 'Other', label: 'Other Medicines' },
+    const itemTypeOptions = [
+      { value: 'medical', label: 'Medical' },
+      { value: 'non-medical', label: 'Non-Medical' },
     ];
     
   
@@ -127,7 +128,7 @@ type ImportDataType = Record<string, any>;
     if (error) {
       messageApi.open({
         type: "error",
-        content: "Error fetching orders",
+        content: "Error fetching data",
       });
     }
     
@@ -206,11 +207,11 @@ type ImportDataType = Record<string, any>;
             />
 
             <DataTableFilterBox
-              filterKey="category"
-              title="category"
-              options={categoryOptions}
-              filterValue={categoryFilter}
-              setFilterValue={setCategoryFilter}
+              filterKey="itemType"
+              title="Item Type"
+              options={itemTypeOptions}
+              filterValue={itemTypeFilter}
+              setFilterValue={setItemTypeFilter}
             />
 
             <DataTableResetFilter

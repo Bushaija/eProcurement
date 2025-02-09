@@ -25,6 +25,11 @@ export function usePurchaseOrderTableFilters() {
     searchParams.category.withOptions({ shallow: false }).withDefault('')
   );
 
+  const [itemTypeFilter, setItemTypeFilter] = useQueryState(
+    'itemType',
+    searchParams.itemType.withOptions({ shallow: false }).withDefault('')
+  );
+
   // State for pagination
   const [page, setPage] = useQueryState(
     'page',
@@ -36,6 +41,7 @@ export function usePurchaseOrderTableFilters() {
     setPlannedUnitSearch(null);
     setAllocationDepartmentFilter(null);
     setCategoryFilter(null);
+    setItemTypeFilter(null);
     setPage(1);
   }, [setPlannedUnitSearch, setAllocationDepartmentFilter, setCategoryFilter, setPage]);
 
@@ -50,6 +56,8 @@ export function usePurchaseOrderTableFilters() {
     allocationDepartmentFilter,
     setAllocationDepartmentFilter,
     categoryFilter,
+    itemTypeFilter,
+    setItemTypeFilter,
     setCategoryFilter,
     page,
     setPage,

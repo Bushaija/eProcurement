@@ -11,7 +11,8 @@ export const searchParams = {
   limit: parseAsInteger.withDefault(10),
   q: parseAsString, 
   allocationDepartment: parseAsString.withDefault(''),
-  category: parseAsString.withDefault(''), 
+  category: parseAsString.withDefault(''),
+  itemType: parseAsString.withDefault(''), 
   plannedUnit: parseAsString.withDefault(''), 
 };
 

@@ -1,6 +1,9 @@
+"use client"
 
 import { TrendingUp } from "lucide-react"
 import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
+import { message, Skeleton } from "antd";
+
 
 import {
   Card,
@@ -16,26 +19,58 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { toTitleCase } from "../../../../../lib/utils"
+import { useMergedPurchaseData } from "@/hooks/use-merge-items-data";
+import { useTableColumns } from "@/hooks/use-get-table-columns";
+import { aggregateByKey, transformAggregatedData } from "@/lib/utils";
 
-export function RadialChart({ title, percentage, data }: { title: string, percentage: number, data: { totalPlanned: number; totalStatus: number; percentage: number; } }) {
+const selectedColumns = [
+  "itemType",
+  "totalCost",
+]
 
-  const chartConfig = {
-    desktop: {
-      label: "Total Planned Orders",
-      color: "hsl(var(--chart-1))",
-    },
-    mobile: {
-      label: "Total Received Orders",
-      color: "hsl(var(--chart-2))",
-    },
-  } satisfies ChartConfig
+const chartConfig = {
+  medical: {
+    label: "Medical",
+    color: "#2563EB",
+  },
+  non_medical: {
+    label: "Non-Medical",
+    color: "#60A8FB",
+  },
+} satisfies ChartConfig
+
+
+export function RadialChart() {
+   const [messageApi, contextHolder] = message.useMessage();
+    const {
+      data: filteredData,
+      isLoading,
+      error,
+    } = useMergedPurchaseData(selectedColumns);
+
+
+    if (isLoading) {
+      return <Skeleton className="py-5 px-5 max-sm:px-0" active paragraph={{ rows: 6}} />;
+    }
+    
+    if (error) {
+      messageApi.open({
+        type: "error",
+        content: "Error fetching data",
+      });
+    }
+    
+    const aggregatedData = aggregateByKey(filteredData, "itemType", "totalCost");
+    
+    const totalItems = filteredData[0].totalCost + filteredData[1].totalCost + filteredData[2].totalCost;
+    
+    const transformedData = transformAggregatedData(aggregatedData, "itemType", "totalCost")
+    console.log("filtered data: x", transformedData);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col border-none">
       <CardHeader className="items-center pb-0">
-        <CardTitle>{toTitleCase(title)}</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Cost by Item Type</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 items-center pb-0">
         <ChartContainer
@@ -43,7 +78,7 @@ export function RadialChart({ title, percentage, data }: { title: string, percen
           className="mx-auto aspect-square w-full max-w-[250px]"
         >
           <RadialBarChart
-            data={[data]}
+            data={[transformedData]}
             endAngle={180}
             innerRadius={80}
             outerRadius={130}
@@ -58,13 +93,19 @@ export function RadialChart({ title, percentage, data }: { title: string, percen
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
                       <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                        
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) - 16}
                           className="fill-foreground text-2xl font-bold"
                         >
-                          {percentage.toLocaleString() + "%"}
+                          {totalItems.toLocaleString()}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 4}
+                          className="fill-muted-foreground"
+                        >
+                          Total Cost
                         </tspan>
                       </text>
                     )
@@ -73,19 +114,21 @@ export function RadialChart({ title, percentage, data }: { title: string, percen
               />
             </PolarRadiusAxis>
             <RadialBar
-              // dataKey={"Total Planned"}
-              dataKey="totalPlanned"
+              strokeWidth={10}
+              dataKey="nonMedical"
               stackId="a"
               cornerRadius={5}
-              fill="var(--color-desktop)"
-              className="stroke-transparent stroke-2"
+              fill="#2563EB"
+              className="stroke-transparentk stroke-2"
             />
             <RadialBar
-              dataKey="totalStatus"
-              fill="var(--color-mobile)"
+              strokeWidth={10}
+
+              dataKey="medical"
+              fill="#60A8FB"
               stackId="a"
               cornerRadius={5}
-              className="stroke-transparent stroke-2"
+              className="stroke-transparentk stroke-2"
             />
           </RadialBarChart>
         </ChartContainer>

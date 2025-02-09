@@ -75,7 +75,7 @@ interface DashboardProps {}
     };
   
   
-    const orderColumns: ColumnDef<TSelectPurchaseOrderReviewSchema>[] = [
+    const reviewColumns: ColumnDef<TSelectPurchaseOrderReviewSchema>[] = [
       {
         accessorKey: "PROCUREMENT_REQUEST_ID",
         header: () => <div className="w-[170px] text-xs font-bold">Request ID</div>,
@@ -293,9 +293,6 @@ interface DashboardProps {}
 
     ];
     
-   
-  
-   
   
     return (
       <>
@@ -322,7 +319,7 @@ interface DashboardProps {}
         <div className="bg-white rounded-[20px]">
           <div className="mt-10 z-10">
             <DataTable
-              columns={orderColumns}
+              columns={reviewColumns}
               data={data || []}
               rowClick={(id: string) => handleOrderClick(id)}
               searchBy="purchase number"

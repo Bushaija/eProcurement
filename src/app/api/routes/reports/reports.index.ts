@@ -24,7 +24,8 @@ const router = createRouter()
 
     .openapi(routes.getPercentagePlannedByShipmentStatus, handlers.getPercentagePlannedByShipmentStatus)
     .openapi(routes.getPurchaseOrdersByShipmentStatus, handlers.getPurchaseOrdersByShipmentStatus)
-    .openapi(routes.getTotalCostReport, handlers.getTotalCostReport);
+    .openapi(routes.getTotalCostReport, handlers.getTotalCostReport)
+    // .openapi(routes.getTenderTAT, handlers.getTenderTAT);
 
 
 export default router;

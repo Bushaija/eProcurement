@@ -13,7 +13,6 @@ import {
     useSearchParams
 } from "next/navigation";
 import qs from "query-string";
-import { Suspense } from "react";
 
 const sections = [
     {

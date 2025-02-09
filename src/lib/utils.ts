@@ -164,3 +164,58 @@ export function formatCsvRows(csvData: any, formatFn: (data: InputData) => Recor
   return parsedRows.map((row) => formatFn(row));
 }
 
+
+export function aggregateByKey<T>(
+  data: T[],
+  key: keyof T,
+  valueKey: keyof T
+): T[] {
+  return Object.values(
+    data.reduce((acc, item) => {
+      const groupKey = item[key] as string; // Convert key value to string
+      const value = Number(item[valueKey]); // Convert value to number
+
+      acc[groupKey] = acc[groupKey] || { ...item, [valueKey]: 0 };
+      acc[groupKey][valueKey] = (acc[groupKey][valueKey] as number) + value;
+      
+      return acc;
+    }, {} as Record<string, T>)
+  );
+}
+
+
+export function transformAggregatedData<T extends Record<string, any>>(
+  data: T[],
+  key: keyof T,
+  valueKey: keyof T
+): Record<string, number> {
+  return data.reduce((acc, item) => {
+    const formattedKey = formatKey(item[key] as string);
+    acc[formattedKey] = item[valueKey] as number;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
+// Helper function to format keys (e.g., convert 'non-medical' to 'nonMedical')
+function formatKey(key: string): string {
+  return key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); // Convert kebab-case to camelCase
+}
+
+
+export function transformDeliveryDates<T extends Record<string, any>>(
+  data: T[],
+  dateKey: keyof T
+): T[] {
+  return data.map((item) => {
+    const dateStr = item[dateKey] as string;
+    const [year, month] = dateStr.split("-");
+    const shortYear = year.slice(-2); // Get last two digits of the year
+    const monthAbbr = new Date(`${year}-${month}-01`).toLocaleString("en-US", { month: "short" });
+
+    return { ...item, [dateKey]: `${monthAbbr}-${shortYear}` };
+  });
+}
+
+
+
+

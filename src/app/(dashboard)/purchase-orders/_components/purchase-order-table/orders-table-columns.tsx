@@ -1,6 +1,112 @@
 import { useRouter } from "next/navigation";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { type DataTableRowAction } from "@/types";
+import { DataTableColumnHeader } from "./data-table-column-header";
+import { purchaseOrderTable as purchaseOrders, type PurchaseOrder } from "@/db/schema";
+import { getStatusIcon } from "../../_lib/utils";
+import { PencilIcon, Trash2 } from "lucide-react";
+import { formatDate, formatDecimals } from "@/lib/utils";
+
+interface GetColumnsProps {
+  setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<PurchaseOrder> | null>>;
+  isModalOpen: boolean;
+  selectedOrderID: number | undefined;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedOrderID: React.Dispatch<React.SetStateAction<number | undefined>>;
+  router: ReturnType<typeof useRouter>;
+  selectedColumns?: string[];
+}
+
+export function getColumns({ setRowAction, isModalOpen, selectedOrderID, setIsModalOpen, setSelectedOrderID, router, selectedColumns }: GetColumnsProps): ColumnDef<PurchaseOrder>[] {
+  const allColumns: Record<string, ColumnDef<PurchaseOrder>> = {
+    select: {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+          className="translate-y-0.5"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="translate-y-0.5"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    id: {
+      accessorKey: "id",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.id}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+    plannedUnit: {
+      accessorKey: "plannedUnit",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Item Name" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.plannedUnit}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+    status: {
+      accessorKey: "status",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => {
+        const status = purchaseOrders.status.enumValues.find((s) => s === row.original.status);
+        if (!status) return null;
+        return (
+          <div className="flex w-[6.25rem] items-center">
+            <span
+              className={`px-3 py-1.5 rounded-[10px] text-xs font-medium text-center ${row.original.status === "COMPLETED" ? "text-[#10A142] bg-[#EAFFF1]" : "text-[#F29425] bg-[#FFF9F0]"}`}
+            >
+              {status}
+            </span>
+          </div>
+        );
+      },
+      filterFn: (row, id, value) => Array.isArray(value) && value.includes(row.getValue(id)),
+    },
+    actions: {
+      accessorKey: "actions",
+      header: () => <div className="text-xs font-semibold w-[130px] ml-4">Actions</div>,
+      cell: ({ row }) => (
+        <div className="flex gap-2.5">
+          <button onClick={() => router.push(`/purchase-orders/edit/${row.original.id}`)}>
+            <PencilIcon className="text-[#667185] h-5" />
+          </button>
+          <button
+            onClick={() => {
+              setIsModalOpen(true);
+              setSelectedOrderID(row.original.id);
+            }}
+          >
+            <Trash2 className="text-[#667185] h-5" />
+          </button>
+        </div>
+      ),
+    },
+  };
+
+  // If no selectedColumns are provided, return all columns
+  if (!selectedColumns || selectedColumns.length === 0) {
+    return Object.values(allColumns);
+  }
+
+  // Return only selected columns
+  return selectedColumns.map((key) => allColumns[key]).filter(Boolean);
+}
+
+
+/*import { useRouter } from "next/navigation";
+import { type ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { type DataTableRowAction } from "@/types"
 import { DataTableColumnHeader } from "./data-table-column-header";
@@ -232,9 +338,9 @@ return [
                 }
             >
                 <SearchCheck className="text-[#667185] h-5" />
-            </button> */}
+            </button> 
 
-            <button
+            /*<button
                 onClick={() =>
                 router.push(`/purchase-orders/edit/${row.original.id}`)
                 }
@@ -255,4 +361,5 @@ return [
         },
     },
 ];
-}
+} */
+

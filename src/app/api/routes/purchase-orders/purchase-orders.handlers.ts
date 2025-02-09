@@ -4,7 +4,7 @@ import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
 import { db } from "@/db";
 import { purchaseOrderTable } from "@/db/schema";
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, UploadCSV } from "./purchase-orders.route";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./purchase-orders.route";
 import type { AppRouteHandler } from "../../lib/types";
 
 
