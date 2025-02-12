@@ -300,7 +300,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
                     <FormLabel>Planned Order Date</FormLabel>
                     <FormControl>
                       <Input 
-                        min={new Date().toISOString().split("T")[0]}
+                        // min={new Date().toISOString().split("T")[0]}
                         type="date" {...field} 
                         onChange={(e) => {
                           field.onChange(e.target.value);
