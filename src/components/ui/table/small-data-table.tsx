@@ -96,7 +96,7 @@ export function SmallDataTable<TData, TValue>({
   });
 
   return (
-    <Card className="space-y-4">
+    <Card className="space-y-4 border-0 shadow-none">
       <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)]">
         <Table className="relative">
           <TableHeader>

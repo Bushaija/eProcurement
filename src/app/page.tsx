@@ -27,11 +27,25 @@ import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-orde
 import { TSelectPurchaseOrderReviewSchema, TSelectPurchaseOrderSchema } from "@/db/schema";
 import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-orders";
 import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/api/use-get-reviews";
+import { SmallDataTable } from "@/components/ui/table/small-data-table";
+import { useMergedPurchaseData } from "@/hooks/use-merge-items-data";
+import { useTableColumns } from "@/hooks/use-get-table-columns";
 
+const selectedColumns = [
+  "id", 
+  "plannedUnit",
+  "category", 
+  "plannedOrderDate",
+  "plannedDeliveryDate",
+  "plannedQuantity",
+  "unitCost",
+  "totalCost",
+  "shipmentStatus"
+];
   
-  interface DashboardProps {}
+interface DashboardProps {}
   
-  const Dashboard: React.FunctionComponent<DashboardProps> = () => {
+const Dashboard: React.FunctionComponent<DashboardProps> = () => {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOrderID, setSelectedOrderID] = useState<number>();
@@ -45,6 +59,17 @@ import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/ap
        error: shipmentError,
        refetch: shipmentRefetch 
     } = useGetPurchaseOrders()
+    const {
+        data: filteredData,
+        isLoading,
+        error,
+    } = useMergedPurchaseData(selectedColumns);
+
+    const columns = useTableColumns({
+      tableType: "merged",
+      selectedColumns,
+    });
+
     const { 
       data: poReviewData, 
       isPending: poReviewIsPending, 
@@ -72,159 +97,161 @@ import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/ap
       });
     }
   
-  const orderColumns: ColumnDef<TSelectPurchaseOrderSchema>[] = [
-    {
-      accessorKey: "PURCHASE_ORDER_NUMBER",
-      header: () => <div className="text-xs font-bold">
-        Shipment ID
-      </div>,
-      cell: ({ row }) => {
-        return (
-          <div className="min-w-[80px] text-[#40474F]">
-            {<span className="">#{row.original.id}</span>}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "ITEM_NAME",
-      header: () => <div className="text-xs font-bold">
-        Item Name
-      </div>,
-      cell: ({ row }) => {
-        return (
-          <div className="w-[80px] text-[#40474F]">
-            {<span className="">{(row.original.plannedUnit).split(" ").slice(0,3).join(" ")}</span>}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "category",
-      header: () => <div className="text-xs font-bold">Category</div>,
-      cell: ({ row }) => {
-        return <div className="text-[#40474F]">{row.original.category}</div>;
-      },
-    },
-    {
-      accessorKey: "PLANNED_ORDER_DATE",
-      header: () => <div className="text-xs font-bold">Order Date</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F] min-w-[100px]">
-            {new Date(row.original.plannedOrderDate).toLocaleDateString()}
-          </div>
-        );
-      },
+  // const orderColumns: ColumnDef<TSelectPurchaseOrderSchema | TSelectPurchaseOrderReviewSchema>[] = [
+  //   {
+  //     accessorKey: "id",
+  //     header: () => <div className="text-xs font-bold">
+  //       Shipment ID
+  //     </div>,
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="min-w-[80px] text-[#40474F]">
+  //           {<span className="">#{row.original.id}</span>}
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "plannedUnit",
+  //     header: () => <div className="text-xs font-bold">
+  //       Item Name
+  //     </div>,
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="w-[80px] text-[#40474F]">
+  //           {
+  //             "plannedUnit" in row.original && 
+  //             row.original.plannedUnit && 
+  //             <span className="">{(row.original.plannedUnit).split(" ").slice(0,3).join(" ")}</span>
+  //           }
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "category",
+  //     header: () => <div className="text-xs font-bold">Category</div>,
+  //     cell: ({ row }) => {
+  //       return (<div className="text-[#40474F]">
+  //         {
+  //           "category" in row.original &&
+  //           row.original.category &&
+  //           <span>{row.original.category}</span>
+  //         }
+  //       </div>);
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "PLANNED_ORDER_DATE",
+  //     header: () => <div className="text-xs font-bold">Order Date</div>,
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="text-[#40474F] min-w-[100px]">
+  //           {
+  //             "plannedOrderDate" in row.original &&
+  //             new Date(row.original.plannedOrderDate).toLocaleDateString() &&
+  //             <span>{new Date(row.original.plannedOrderDate).toLocaleDateString()}</span>
+  //           }
+  //         </div>
+  //       );
+  //     },
       
-    },
-    {
-      accessorKey: "PLANNED_DELIVERY_DATE",
-      header: () => <div className="text-xs font-bold">Delivery Date</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F] min-w-[100px]">
-            {new Date(row.original.plannedDeliveryDate).toLocaleDateString()}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "PLANNED_QUANTITY",
-      header: ({ column }) => {
-        return (
-          <div className="min-w-[70px] text-xs font-bold">
-              Quantity
-          </div>
-        );
-      },
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F]">
-            {`${row.original.plannedQuantity.toFixed(2)}`}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "UNIT_COST",
-      header: ({ column }) => {
-        return (
-          <div className="text-xs font-bold min-w-[100px]">
-              <span className="">Unit Cost USD</span>
-          </div>
-        );
-      },
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F]">
-            {`${row.original.unitCost}`}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "TOTAL_COST",
-      header: ({ column }) => {
-        return (
-          <div className="min-w-[100px] text-xs font-bold">
-              Total Cost USD
-          </div>
-        );
-      },
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F]">
-            {`${row.original.totalCost}`}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "STATUS",
-      header: () => <div className="text-xs text-center font-bold">Status</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F]">
-            {row.original.status === "COMPLETED" ? (
-              <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                {row.original.status}
-              </span>
-            ) : (
-              <span className="text-[#F29425] text-center bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                {row.original.status}
-              </span>
-            )}
-          </div>
-        );
-      },
-    }
-  ];
+  //   },
+  //   {
+  //     accessorKey: "PLANNED_DELIVERY_DATE",
+  //     header: () => <div className="text-xs font-bold">Delivery Date</div>,
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="text-[#40474F] min-w-[100px]">
+  //           {
+  //             "plannedDeliveryDate" in row.original &&
+  //             new Date(row.original.plannedDeliveryDate).toLocaleDateString() &&
+  //             <span>{new Date(row.original.plannedOrderDate).toLocaleDateString()}</span>
+  //           }
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "PLANNED_QUANTITY",
+  //     header: ({ column }) => {
+  //       return (
+  //         <div className="min-w-[70px] text-xs font-bold">
+  //             Quantity
+  //         </div>
+  //       );
+  //     },
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="text-[#40474F]">
+  //           {
+  //             "plannedQuantity" in row.original &&
+  //             row.original.plannedQuantity.toFixed(2) &&
+  //             <span>{row.original.plannedQuantity.toFixed(2)}</span>
+  //           }
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "UNIT_COST",
+  //     header: ({ column }) => {
+  //       return (
+  //         <div className="text-xs font-bold min-w-[100px]">
+  //             <span className="">Unit Cost USD</span>
+  //         </div>
+  //       );
+  //     },
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="text-[#40474F]">
+  //           {
+  //             "unitCost" in row.original &&
+  //             row.original.unitCost &&
+  //             <span>{row.original.unitCost}</span>
+  //           }
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "TOTAL_COST",
+  //     header: ({ column }) => {
+  //       return (
+  //         <div className="min-w-[100px] text-xs font-bold">
+  //             Total Cost USD
+  //         </div>
+  //       );
+  //     },
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="text-[#40474F]">
+  //           {
+  //             "totalCost" in row.original &&
+  //             row.original.totalCost &&
+  //             <span>{row.original.totalCost}</span>
+  //           }
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     accessorKey: "shipmentStatus",
+  //     header: () => <div className="text-xs text-center font-bold">Status</div>,
+  //     cell: ({ row }) => {
+  //       return (
+  //         <div className="text-[#40474F]">
+  //           {
+  //               "shipmentStatus" in row.original &&
+  //               row.original.shipmentStatus &&
+  //               row.original.shipmentStatus
+  //           }
+  //         </div>
+  //       );
+  //     },
+  //   }
+  // ];
   
-  const handleOrderClick = (id: string) => {
-    router.push(`/purchase-orders/${id}`);
-  };
-
-  const handleDeleteOrder = () => {
-    mutate(undefined, {
-      onSuccess: () => {
-        poReviewRefetch();
-        poReviewRefetch();
-        messageApi.open({
-          type: "success",
-          content: "shipment items deleted successfully",
-        });
-        setIsModalOpen(false);
-      },
-      onError: (err) => {
-        messageApi.open({
-          type: "error",
-          content: err.message || "An error occurred while deleting the shipment items.",
-        });
-      },
-    });
-  };
-
   return (
     <Layout>
       {contextHolder}
@@ -246,18 +273,20 @@ import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/ap
           value={(shipmentData?.length) ? String(shipmentData?.length) : "0"}
           name={`Total Shipment item${shipmentData && shipmentData.length > 1 ? "s" : ""}`}
         />
+        
         <StatisticsCard
-        icon={<TotalCostIcon />}
-        value={shipmentData
-          ? shipmentData.reduce(
-              (acc: number, curr: TSelectPurchaseOrderSchema) =>
-                acc + (curr.totalCost ? curr.totalCost : 0),
-              0
-            ).toLocaleString("en-US")
-          : ""}
-        name="Total cost incurred"
-        isUSD
-      />
+          icon={<TotalCostIcon />}
+          value={shipmentData
+            ? shipmentData.reduce(
+                (acc: number, curr: TSelectPurchaseOrderSchema) =>
+                  acc + (curr.totalCost ? curr.totalCost : 0),
+                0
+              ).toLocaleString("en-US")
+            : ""}
+          name="Total cost incurred"
+          isUSD
+        />
+
         <StatisticsCard
           icon={<PendingOrderIcon />}
           value={String(poReviewData
@@ -275,90 +304,50 @@ import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/ap
               : ""
           }`}
         />
-        <StatisticsCard
-          icon={<ApprovedOrderIcon />}
-          value={String(poReviewData
-            ? poReviewData.filter(
-                (order: TSelectPurchaseOrderReviewSchema) =>
-                  order.shipmentStatus.toLowerCase().trim() === "received"
-              ).length
-            : 0)}
-          name={`Received shipment${
-            poReviewData && poReviewData.filter(
-              (order: TSelectPurchaseOrderReviewSchema) =>
-                order.shipmentStatus.toLowerCase().trim() === "received"
-            ).length > 1
-              ? "s"
-              : ""
-          }`}
-        />
-      </div>
 
-    {/* <section className="w-[950px] h-[290px] mt-4">
-      <DelaysBarChart />
-    </section> */}
+        <StatisticsCard
+            icon={<ApprovedOrderIcon />}
+            value={String(poReviewData
+              ? poReviewData.filter(
+                  (order: TSelectPurchaseOrderReviewSchema) =>
+                    order.shipmentStatus?.toLowerCase().trim() === "received"
+                ).length
+              : 0)}
+            name={`Received shipment${
+              poReviewData && poReviewData.filter(
+                (order: TSelectPurchaseOrderReviewSchema) =>
+                  order.shipmentStatus?.toLowerCase().trim() === "received"
+              ).length > 1
+                ? "s"
+                : ""
+            }`}
+        />
+
+      </div>
 
     <section className="mt-4">
         <p className="text-[#121417] text-[20px] font-semibold">
           Recent Shipment Items
         </p>
         <p className="text-[#64707D] font-light">
-          You are viewing Recent Purchase Orders
+          You are viewing Recent Shipment Items
         </p>
         <div className="rounded-[20px] mt-4">
-          <DataTable
+          <SmallDataTable 
+            data = {filteredData}
+            columns = {columns}
+            totalItems = {filteredData.length}
+          />
+          {/* <DataTable
             showPagination={false}
             columns={orderColumns}
             data={shipmentData || []}
             rowClick={(id: string) => handleOrderClick(id)}
             searchBy="category"
-          />
+          /> */}
         </div>
-      {/* <div className="">
-        <StatusBarChart />
-      </div> */}
     </section>
 
-      <Modal
-        closeIcon={null}
-        width={338}
-        centered
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={() => (
-          <div className="flex justify-center">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="px-6 py-2 bg-white border border-[rgba(23,23,31,0.10)] shadow-[0px_1px_1px_0px_rgba(18,18,18,0.10),0px_0px_0px_1px_rgba(18,18,18,0.07),0px_1px_3px_0px_rgba(18,18,18,0.10)] border-solid rounded-[10px] border-[#17171f1a]"
-            >
-              No, Cancel
-            </button>
-            <button
-              onClick={handleDeleteOrder}
-              className="px-8 py-2 deleteBtn ml-4"
-              disabled={isDeletingOrder}
-            >
-              {isDeletingOrder ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Yes, Delete"
-              )}
-            </button>
-          </div>
-        )}
-      >
-        <div className="text-center">
-          <div className="flex justify-center mb-5">
-            <ModalTrashIcon />
-          </div>
-          <p className="text-[#121417] text-lg font-semibold mb-2">
-            Delete Purchase Order
-          </p>
-          <p className="text-sm text-[#64707D] mb-6">
-            Are you sure you want to delete this purchase order?
-          </p>
-        </div>
-      </Modal>
     </Layout>
   );
 };

@@ -233,18 +233,6 @@ export function DataTable<TData, TValue>({
           onChange={(e) => handleSearch(e.target.value)}
           className={cn('w-full md:max-w-sm', isLoading && 'animate-pulse')}
         />
-        {/* {
-          searchBy && (
-            <Input
-              placeholder={`Search by ${searchByTitle}...`}
-              value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn(searchBy || "")?.setFilterValue(event.target.value)
-              }
-              className={"rounded-md w-[350px] h-[36px]"}
-            />
-          )
-        } */}
        { 
         filterTitle &&
         <Popover>
