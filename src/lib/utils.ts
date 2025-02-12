@@ -216,6 +216,26 @@ export function transformDeliveryDates<T extends Record<string, any>>(
   });
 }
 
+// date formatting
+
+export const formatDateTime = (dateTimeStr: string): string => {
+  // Convert string to Date object
+  const date = new Date(dateTimeStr);
+
+  // Extract year, month, and day
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Ensure two-digit format
+  const day = String(date.getDate()).padStart(2, "0");
+
+  // Extract hours and minutes
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  // Return formatted string: YYYY-MM-DD HH:MM
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
+
 
 
 

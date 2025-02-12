@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Loader2, PencilIcon, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { calculateDeliveryStatus, formatDecimals } from "@/lib/utils";
+import { calculateDeliveryStatus, formatDateTime, formatDecimals } from "@/lib/utils";
 
 interface CardCellProps {
   title?: string;
@@ -23,7 +23,7 @@ interface CardCellProps {
 }
 
 const CardCell = ({ title, value, isMainTitle = false }: CardCellProps) => {
-  return <div>
+  return <div className={`${isMainTitle ? "" : "border-black w-[200px]"}`}>
     <p className="font-semibold text-[#98A2B3]">{title}</p>
     <p className={`${isMainTitle ? "font-bold p-2 text-[#10A142]" : "font-medium text-[#40474F]"}`}>
       {value}
@@ -154,51 +154,46 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
             
           <Separator />
 
-          <article>
+          <article className="w-full"> 
             <CardCell value={data?.plannedUnit} isMainTitle={true} />
-              <div className="flex items-start gap-6 mt-4 h-5">
-              {/* <div> */}
+            <div className="flex items-start gap-6 mt-4 h-5">
+              <div className="flex  gap-4 text-[#98A2B3] font-semibold">
+                <p>Order ID: </p>
+                <span className="text-[#40474F]">#{data?.id}</span>
+              </div>
 
-                <div className="flex  gap-4 text-[#98A2B3] font-semibold">
-                  <p>Order ID: </p>
-                  <span className="text-[#40474F]">#{data?.id}</span>
-                </div>
+              <Separator orientation="vertical" />
+              
+              <div>
+                <span className="text-[#98A2B3] font-semibold">Order status</span>
+                {" "}
+                {
+                  data?.status === "PLANNED" 
+                  ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{data?.status}</span>) 
+                  : ( 
+                      <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
+                        {data?.status}                        </span>
+                  )
+                }
+              </div>
 
-                <Separator orientation="vertical" />
-                
-                <div>
-                  <span className="text-[#98A2B3] font-semibold">Order status</span>
-                  {" "}
-                  {
-                    data?.status === "PLANNED" 
-                    ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{data?.status}</span>) 
-                    : ( 
-                        <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                          {data?.status}                        </span>
-                    )
-                  }
-                </div>
+              <Separator orientation="vertical" />
 
-                <Separator orientation="vertical" />
-
-                <div className="text-">
-                  <span
-                    className={`${
-                      msg.includes("delayed")
-                        ? "text-[#D32F2F] bg-[#FEEAEA]" // Red for overdue
-                        : "text-[#10A142] bg-[#EAFFF1]" // Green for ongoing
-                    } px-3 py-1.5 rounded-[10px] text-sm font-medium`}
-                  >
-                    {msg}
-                  </span>
-                </div>
-              {/* </div> */}
+              <div className="text-">
+                <span
+                  className={`${
+                    msg.includes("delayed")
+                      ? "text-[#D32F2F] bg-[#FEEAEA]" // Red for overdue
+                      : "text-[#10A142] bg-[#EAFFF1]" // Green for ongoing
+                  } px-3 py-1.5 rounded-[10px] text-sm font-medium`}
+                >
+                  {msg}
+                </span>
+              </div>
             </div>
-
-
     
             <div className="mt-10 flex flex-col gap-4 flex-wrap">
-              <div className="flex gap-8">
+              <div className="flex gap-8 w-full">
                 <CardCell title="Item Category" value={data?.category} />
                 <CardCell title="Division" value={data?.allocationDepartment} />
                 <CardCell title="Pack Size" value={data?.packSize} />
@@ -209,15 +204,15 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
                 <CardCell title="Planned Quantity" value={data?.plannedQuantity} />
                 <CardCell title="Revised Quantity" value={data?.revisedQuantity ? data?.revisedQuantity : "N/A"} />
                 <CardCell title="Second Review" value={data?.secondReview ? data?.secondReview : "N/A"} />
-                <CardCell title="Total Cost" value={formatDecimals(Number(data?.totalCost))} />
               </div>
               <div className="flex gap-8">
+                <CardCell title="Total Cost" value={formatDecimals(Number(data?.totalCost))} />
                 <CardCell title="Planned Order Date" value={data?.plannedOrderDate} />
                 <CardCell title="Planned Delivery Date" value={data?.plannedDeliveryDate} />
               </div>
               <div className="flex gap-8">
-                <CardCell title="Created At" value={data?.createdAt} />
-                <CardCell title="Updated At" value={data?.updatedAt} />
+                <CardCell title="Created At" value={formatDateTime(String(data?.createdAt))} />
+                <CardCell title="Updated At" value={formatDateTime(String(data?.updatedAt))} />
               </div>
             </div>
 
