@@ -1,10 +1,11 @@
-import PageContainer from "@/components/layout/page-container";
+import {
+    TabsContent
+    ,TabsList
+    ,TabsTrigger 
+} from "@radix-ui/react-tabs";
 import { Tabs } from "@/components/ui/tabs";
-import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import ExecutionStatusAnalysis from "./_components/execution-status-analysis/execution-status-analysis";
-import CostAnalysis from "./_components/cost-analysis/cost-analysis";
-import ShipmentAnalysis from "./_components/shipment-analysis.ts/shipment-analysis";
 import Dashboard from "./_components/dashboard";
+import PageContainer from "@/components/layout/page-container";
 
 export const metadata = {
     title: 'PO | Analytics',
@@ -48,18 +49,8 @@ export default function page() {
                 }
             </TabsList>
             <TabsContent value="execution-status" className="space-y-4">
-                {/* <ExecutionStatusAnalysis /> */}
                 <Dashboard />
             </TabsContent>
-
-            {/* <TabsContent value="cost-analysis" className="space-y-4">
-                <CostAnalysis />
-            </TabsContent>
-
-            <TabsContent value="shipment" className="space-y-4">
-                <ShipmentAnalysis />
-            </TabsContent> */}
-           
         </Tabs>
     </PageContainer>
   )

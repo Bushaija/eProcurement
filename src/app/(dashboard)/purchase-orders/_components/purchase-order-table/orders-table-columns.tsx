@@ -20,38 +20,53 @@ interface GetColumnsProps {
 
 export function getColumns({ setRowAction, isModalOpen, selectedOrderID, setIsModalOpen, setSelectedOrderID, router, selectedColumns }: GetColumnsProps): ColumnDef<PurchaseOrder>[] {
   const allColumns: Record<string, ColumnDef<PurchaseOrder>> = {
-    select: {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="translate-y-0.5"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="translate-y-0.5"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     id: {
       accessorKey: "id",
       header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
-      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.id}</div>,
+      cell: ({ row }) => <div className="w-20 font-medium">{row.original.id}</div>,
       enableSorting: true,
       enableHiding: true,
     },
     plannedUnit: {
       accessorKey: "plannedUnit",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Item Name" />,
-      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.plannedUnit}</div>,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">
+        {(row.original.plannedUnit).split(" ").slice(0,2) + ".."} 
+      </div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    category: {
+      accessorKey: "category",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Item Ctegory" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">
+        {(row.original.category).split(" ").slice(0,2)} 
+      </div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    packSize: {
+      accessorKey: "packSize",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pack size" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.packSize}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    allocationDepartment: {
+      accessorKey: "allocationDepartment",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Division" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.allocationDepartment}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+    
+    fundingSource: {
+      accessorKey: "fundingSource",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Funding Source" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.fundingSource}</div>,
       enableSorting: true,
       enableHiding: true,
     },
@@ -73,25 +88,80 @@ export function getColumns({ setRowAction, isModalOpen, selectedOrderID, setIsMo
       },
       filterFn: (row, id, value) => Array.isArray(value) && value.includes(row.getValue(id)),
     },
-    actions: {
-      accessorKey: "actions",
-      header: () => <div className="text-xs font-semibold w-[130px] ml-4">Actions</div>,
-      cell: ({ row }) => (
-        <div className="flex gap-2.5">
-          <button onClick={() => router.push(`/purchase-orders/edit/${row.original.id}`)}>
-            <PencilIcon className="text-[#667185] h-5" />
-          </button>
-          <button
-            onClick={() => {
-              setIsModalOpen(true);
-              setSelectedOrderID(row.original.id);
-            }}
-          >
-            <Trash2 className="text-[#667185] h-5" />
-          </button>
-        </div>
-      ),
+    unitCost: {
+      accessorKey: "unitCost",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Unit Cost" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{formatDecimals(Number(row.original.unitCost))}</div>,
+      enableSorting: true,
+      enableHiding: true,
     },
+    plannedQuantity: {
+      accessorKey: "plannedQuantity",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pl. QTY" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.plannedQuantity}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+    revisedQuantity: {
+      accessorKey: "revisedQuantity",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Revised QTY" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.revisedQuantity}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    secondReview: {
+      accessorKey: "secondReview",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Second Review" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.secondReview}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    totalCost: {
+      accessorKey: "totalCost",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Total Cost" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{formatDecimals(Number(row.original.totalCost))}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    plannedOrderDate: {
+      accessorKey: "plannedOrderDate",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pl. Order Date" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.plannedOrderDate}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    plannedDeliveryDate: {
+      accessorKey: "plannedDeliveryDate",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pl. Delivery Date" />,
+      cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.plannedDeliveryDate}</div>,
+      enableSorting: true,
+      enableHiding: true,
+    },
+    
+    // actions: {
+    //   accessorKey: "actions",
+    //   header: () => <div className="text-xs font-semibold w-[130px] ml-4">Actions</div>,
+    //   cell: ({ row }) => (
+    //     <div className="flex gap-2.5">
+    //       <button onClick={() => router.push(`/purchase-orders/edit/${row.original.id}`)}>
+    //         <PencilIcon className="text-[#667185] h-5" />
+    //       </button>
+    //       <button
+    //         onClick={() => {
+    //           setIsModalOpen(true);
+    //           setSelectedOrderID(row.original.id);
+    //         }}
+    //       >
+    //         <Trash2 className="text-[#667185] h-5" />
+    //       </button>
+    //     </div>
+    //   ),
+    // },
+    
   };
 
   // If no selectedColumns are provided, return all columns

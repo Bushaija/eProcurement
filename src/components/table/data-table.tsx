@@ -72,6 +72,7 @@ interface FilterOptions {
 };
 
 interface DataTableProps<TData, TValue> {
+  showPagination: boolean;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   totalItems: number;
@@ -105,6 +106,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   totalItems,
+  showPagination = true,
   pageSizeOptions = [10, 20, 30, 40, 50],
 
 
@@ -312,6 +314,8 @@ export function DataTable<TData, TValue>({
         </section>
         <div className="rounded-md px-4 bg-white">
       <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)] ">
+      
+      <section className="sticky top-0 z-10 bg-background">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -366,10 +370,12 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-        <ScrollBar orientation="horizontal" />
+      </section>
+
+        <ScrollBar orientation="horizontal"/>
         </ScrollArea>
         </div>
-        <div className="flex flex-col items-center justify-end gap-2 space-x-2 p-4 sm:flex-row">
+        <div className={`${showPagination ? "block" : "hidden"} flex flex-col items-center justify-end gap-2 space-x-2 p-4 sm:flex-row`}>
         <div className="flex w-full items-center justify-between">
           <div className="flex-1 text-sm text-muted-foreground">
             {totalItems > 0 ? (
@@ -413,7 +419,7 @@ export function DataTable<TData, TValue>({
           </div>
 
         </div>
-        <div className="flex w-full items-center justify-between gap-2 sm:justify-end">
+        <div className={`flex w-full items-center justify-between gap-2 sm:justify-end`}>
           <div className="flex w-[150px] items-center justify-center text-sm font-medium">
             {totalItems > 0 ? (
               <>

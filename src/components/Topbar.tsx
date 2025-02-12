@@ -27,7 +27,7 @@ const Topbar: React.FunctionComponent<TopbarProps> = () => {
               : pathname?.includes("edit")
               ? "Edit purchase order"
               : pathname?.includes("purchase-orders")
-              ? "Purchase order list"
+              ? "Shipment items"
               : pathname?.includes("reviews")
               ? "Purchase order follow-up"
               : pathname?.includes("invoices")

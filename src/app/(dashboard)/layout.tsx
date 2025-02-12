@@ -5,7 +5,7 @@ export default function DashboardLayout ({ children, }: Readonly<{children: Reac
     return (
         <div>
             <Layout>
-                    {children}
+                {children}
             </Layout>
         </div>
     );

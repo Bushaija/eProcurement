@@ -1,6 +1,6 @@
 import * as zod from "zod";
 import { relations } from "drizzle-orm";
-import { doublePrecision, integer, pgEnum, pgTable, serial, timestamp, varchar, text, date } from "drizzle-orm/pg-core";
+import { doublePrecision, integer, pgEnum, pgTable, serial, timestamp, varchar, text, date, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod"
 
 export const statusEnum = pgEnum("status", ["PLANNED", "APPROVED", "REJECTED", "SUBMITTED", "COMPLETED"])
@@ -11,7 +11,8 @@ export const shipmentEnum = pgEnum("shipment_status", ['ORDERED', 'PLANNED', 'CA
 
 export const purchaseOrderTable = pgTable("purchase_order", {
   id: serial("id").primaryKey(),
-  itemType: varchar("item_type", { length: 255 }),
+  // TODO: Remove itemType
+  // itemType: varchar("item_type", { length: 255 }),
   category: varchar("category", { length: 255 }).notNull(),
   plannedUnit: varchar("planned_unit", { length: 255 }).notNull(),
   allocationDepartment: varchar("allocation_department", { length: 255 }).notNull(),
@@ -21,7 +22,7 @@ export const purchaseOrderTable = pgTable("purchase_order", {
   plannedQuantity: integer("planned_quantity").notNull(),
   revisedQuantity: integer("revised_quantity").default(0),
   secondReview: integer("second_review").default(0),
-  unitCost: doublePrecision("unit_cost").notNull(),
+  unitCost: numeric("unit_cost").notNull(),
   totalCost: doublePrecision("total_cost"),
   fundingSource: varchar("funding_source", { length: 255 }),
   status: statusEnum().default("PLANNED"),
@@ -79,7 +80,7 @@ export const purchaseOrderReviewRelations = relations(purchaseOrderReviewTable, 
 export const selectPurchaseOrdersSchema = createSelectSchema(purchaseOrderTable);
 
 export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, {
-  itemType: schema => schema.itemType.min(1).max(500),
+  // itemType: schema => schema.itemType.min(1).max(500),
   category: schema => schema.category.min(1).max(500),
   plannedUnit: schema => schema.plannedUnit.min(1).max(500),
   allocationDepartment: schema => schema.allocationDepartment.min(1).max(500),
@@ -90,7 +91,7 @@ export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, 
   fundingSource: schema => schema.fundingSource.min(1).max(500),
 })
   .required({
-    itemType: true,
+    // itemType: true,
     category: true,
     plannedUnit: true,
     allocationDepartment: true,

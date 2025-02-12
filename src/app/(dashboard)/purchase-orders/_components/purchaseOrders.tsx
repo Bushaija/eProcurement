@@ -22,17 +22,54 @@ import { DataTableFilterBox } from "@/components/table/data-table-filter-box";
 import { DataTableResetFilter } from "@/components/table/data-table-reset-filter";
 import { DataTableExport } from "@/components/table/data-table-export";
 import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel} from "@tanstack/react-table";
-// import { CsvImporter } from "@/app/(dashboard)/purchase-orders/_components/csv-importer";
-import { formatCsvRows, formatInputData, InputData } from "@/lib/utils";
+import { formatCsvRows, formatInputData } from "@/lib/utils";
+import { CsvImporter } from "./csv-importer";
 
-// const PURCHASE_ORDER_OPTIONS = [
-//   { value: "ORDERED", label: 'ORDERED'},
-//   { value: "PLANNED", label: 'PLANNED'},
-//   { value: "CANCELLED", label: 'CANCELLED'},
-//   { value: "RECEIVED", label: 'RECEIVED'},
-//   { value: "HOLD", label: 'HOLD'},
-//   { value: "PARTIAL RECEIVED", label: 'PARTIAL RECEIVED'},
-// ]
+export const DIVISION_OPTIONS = [
+  { value: "BTD", label: "BTD"},
+  { value: "CS", label: "CS"},
+  { value: "HIV_AIDS_STIs", label: "HIV/AIDS & STIs"},
+  { value: "MCCH", label: "MCCH"},
+  { value: "MH", label: "MH"},
+  { value: "MOPD", label: "MOPD"},
+  { value: "MTD", label: "MTD"},
+  { value: "NCDs", label: "NCDs"},
+  { value: "NRL", label: "NRL"},
+  { value: "PHS_EPR", label: "PHS_EPR"},
+  { value: "RHCC", label: "RHCC"},
+  { value: "RIDS", label: "RIDS"},
+  { value: "SAMU", label: "SAMU"},
+  { value: "TB_Nutrition", label: "TB Nutrition"},
+  { value: "TB_Medicine", label: "TB Medicine"}
+];
+
+export const CATEGORY_OPTIONS = [
+  { value: 'ARV', label: 'ARV'},
+  { value: 'OIS', label: 'OIS'},
+  { value: 'BIOCHEMISTRY', label: 'BIOCHEMISTRY'},
+  { value: 'CD4', label: 'CD4'},
+  { value: 'General Consummables', label: 'General Consummables'},
+  { value: 'Genotyping', label: 'Genotyping'},
+  { value: 'Hematology', label: 'Hematology'},
+  { value: 'HIV EID', label: 'HIV EID'},
+  { value: 'HIV RTKs', label: 'HIV RTKs'},
+  { value: 'HIV VL Abbott', label: 'HIV VL Abbott'},
+  { value: 'HIV VL Roche', label: 'HIV VL Roche'},
+  { value: 'Other Tests', label: 'Other Tests'},
+  { value: 'PT', label: 'PT'},
+  { value: 'Hepatitis RDT', label: 'Hepatitis RDT'},
+  { value: 'Hepatitis VL', label: 'Hepatitis VL'},
+  { value: 'Hepatitis Self-Test', label: 'Hepatitis Self-Test'},
+  { value: 'Other Test', label: 'Other Test'},
+  { value: 'Hepatitis medicines ', label: 'Hepatitis medicines '},
+  { value: 'MALARIA', label: 'MALARIA'},
+  { value: 'Medicines\nLeprosy', label: 'Medicines\nLeprosy'},
+  { value: 'Public Family planning', label: 'Public Family planning'},
+  { value: 'SOCIAL MARKETING PF', label: 'SOCIAL MARKETING PF'},
+  { value: 'COMMUNITY', label: 'COMMUNITY'},
+  { value: 'Emergency obstetrical care ', label: 'Emergency obstetrical care '},
+  { value: 'Early infant MC  drugs and consumables', label: 'Early infant MC  drugs and consumables'},
+]
 
 type ImportDataType = Record<string, any>;
 
@@ -101,16 +138,16 @@ type ImportDataType = Record<string, any>;
       getCoreRowModel: getCoreRowModel(),
     });    
   
-    const departmentOptions = [
-      { value: 'CP', label: 'Clinical Practice' },
-      { value: 'OP', label: 'Operations' },
-      { value: 'Admin', label: 'Administration' },
-    ];
+    // const departmentOptions = [
+    //   { value: 'CP', label: 'Clinical Practice' },
+    //   { value: 'OP', label: 'Operations' },
+    //   { value: 'Admin', label: 'Administration' },
+    // ];
   
-    const itemTypeOptions = [
-      { value: 'medical', label: 'Medical' },
-      { value: 'non-medical', label: 'Non-Medical' },
-    ];
+    // const itemTypeOptions = [
+    //   { value: 'medical', label: 'Medical' },
+    //   { value: 'non-medical', label: 'Non-Medical' },
+    // ];
     
   
     if (isPending) {
@@ -170,10 +207,10 @@ type ImportDataType = Record<string, any>;
         <div className="flex justify-between items-center mt-2">
           <div>
             <p className="text-[#121417] text-2xl font-bold max-sm:text-xl">
-              Purchase Orders
+              Planned Shipment Items
             </p>
             <p className="text-[#64707D] text-sm font-normal max-sm:text-xs mb-4">
-              You are viewing all planned purchase orders.
+              You are viewing all planned shipment items
             </p>
           </div>
           <Button
@@ -182,9 +219,8 @@ type ImportDataType = Record<string, any>;
             className="bg-[rgb(114,1,253)] hover:bg-[#430194] px-4 py-3 rounded-[10px] text-white"
           >
             {
-              isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : ("Create Purchase Order")
+              isLoading ?
+              (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : ("Create Shipment Item")
             }
           </Button>
         </div>
@@ -192,7 +228,7 @@ type ImportDataType = Record<string, any>;
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 w-full">
             <DataTableSearch
-              searchKey="by medicine name"
+              searchKey="by Item name"
               searchQuery={plannedUnitSearch}
               setSearchQuery={setPlannedUnitSearch}
               setPage={setPage}
@@ -200,16 +236,16 @@ type ImportDataType = Record<string, any>;
 
             <DataTableFilterBox
               filterKey="allocationDepartment"
-              title="Department"
-              options={departmentOptions}
+              title="Division"
+              options={DIVISION_OPTIONS}
               filterValue={allocationDepartmentFilter}
               setFilterValue={setAllocationDepartmentFilter}
             />
 
             <DataTableFilterBox
-              filterKey="itemType"
-              title="Item Type"
-              options={itemTypeOptions}
+              filterKey="category"
+              title="Categories"
+              options={CATEGORY_OPTIONS}
               filterValue={itemTypeFilter}
               setFilterValue={setItemTypeFilter}
             />
@@ -224,7 +260,7 @@ type ImportDataType = Record<string, any>;
             table={table}
           />
 
-          {/* <CsvImporter
+          <CsvImporter
             fields={[
               { label: "Category", value: "category", required: true},
               { label: "Medicine", value: "plannedUnit", required: true},
@@ -246,7 +282,7 @@ type ImportDataType = Record<string, any>;
               setImportData((prev) => [...prev, ...formattedData])
             }}
             className="self-end"
-        /> */}
+        />
         </div>
 
       </div>

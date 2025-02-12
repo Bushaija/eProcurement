@@ -12,13 +12,13 @@ const routes = [
   },
   {
     href: "/purchase-orders",
-    label: "Purchase Orders",
+    label: "Shipment Items",
     disabled: false,
     icon: <PaperPlaneIcon />
   },
   {
     href: "/reviews",
-    label: "Reviews",
+    label: "Implementation",
     disabled: false,
     icon: <PurchaseOrderIcon />
   },

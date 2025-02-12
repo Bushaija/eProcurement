@@ -14,16 +14,31 @@ import { Separator } from "@/components/ui/separator"
 import { Loader2, PencilIcon, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { calculateDeliveryStatus } from "@/lib/utils";
+import { calculateDeliveryStatus, formatDecimals } from "@/lib/utils";
+
+interface CardCellProps {
+  title?: string;
+  value: any;
+  isMainTitle?: boolean;
+}
+
+const CardCell = ({ title, value, isMainTitle = false }: CardCellProps) => {
+  return <div>
+    <p className="font-semibold text-[#98A2B3]">{title}</p>
+    <p className={`${isMainTitle ? "font-bold p-2 text-[#10A142]" : "font-medium text-[#40474F]"}`}>
+      {value}
+    </p>
+  </div>
+}
   
-  interface OrderDetailsProps {}
+interface OrderDetailsProps {}
   
-  const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeletingOrder, setIsDeletingOrder] = useState<boolean>(false);
-    const [messageApi, contextHolder] = message.useMessage();
-    const router = useRouter();
-    const params = useParams();
+const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeletingOrder, setIsDeletingOrder] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const router = useRouter();
+  const params = useParams();
 
     const { refetch } = useGetPurchaseOrders();
     const { mutate} = useDeletePurchaseOrder(Number(params.id));
@@ -127,7 +142,7 @@ import { calculateDeliveryStatus } from "@/lib/utils";
           </button>
         </section>
 
-        <section className="bg-white rounded-[10px] mt-10 p-6">
+        <section className="bg-white rounded-[10px] mt-6 mb-4 p-6">
           <div className="flex items-center w-full justify-between mb-2">
             <p className="text-[#40474F] text-2xl font-semibold">Summary</p>
             <Dropdown menu={{ items }} placement="bottomLeft" arrow>
@@ -140,8 +155,10 @@ import { calculateDeliveryStatus } from "@/lib/utils";
           <Separator />
 
           <article>
-            <div className="flex items-start gap-6 mt-6 h-5">
+            <CardCell value={data?.plannedUnit} isMainTitle={true} />
+              <div className="flex items-start gap-6 mt-4 h-5">
               {/* <div> */}
+
                 <div className="flex  gap-4 text-[#98A2B3] font-semibold">
                   <p>Order ID: </p>
                   <span className="text-[#40474F]">#{data?.id}</span>
@@ -157,8 +174,7 @@ import { calculateDeliveryStatus } from "@/lib/utils";
                     ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{data?.status}</span>) 
                     : ( 
                         <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                          {data?.status}
-                        </span>
+                          {data?.status}                        </span>
                     )
                   }
                 </div>
@@ -176,119 +192,32 @@ import { calculateDeliveryStatus } from "@/lib/utils";
                     {msg}
                   </span>
                 </div>
-
-                <div>
-
-                </div>
               {/* </div> */}
             </div>
+
+
     
             <div className="mt-10 flex flex-col gap-4 flex-wrap">
               <div className="flex gap-8">
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Item Type </p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.itemType}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Category </p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.category}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Planning Unit </p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.plannedUnit}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Allocation </p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.allocationDepartment}
-                  </p>
-                </div>
+                <CardCell title="Item Category" value={data?.category} />
+                <CardCell title="Division" value={data?.allocationDepartment} />
+                <CardCell title="Pack Size" value={data?.packSize} />
+                <CardCell title="Funding Source" value={data?.fundingSource} />
               </div>
-
               <div className="flex gap-8">
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Pack Size </p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.packSize}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Planned Order Date</p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.plannedOrderDate}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Planned Delivery Date</p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.plannedDeliveryDate}
-                  </p>
-                </div>
-              </div> 
-
-              <div className="flex gap-8">
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Planned Quantity</p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.plannedQuantity}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Revised Quantity</p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.revisedQuantity !== null ? data?.revisedQuantity : 'N/A'}
-                  </p>
-                </div>
-                <div className="flex flex-col text-sm w-[180px]">
-                  <p className="font-semibold text-[#98A2B3]">Second Review</p>
-                  <p className="text-[#40474F] font-medium">
-                    {data?.secondReview || 'N/A'}
-                  </p>
-                </div>
+                <CardCell title="Unit Cost" value={formatDecimals(Number(data?.unitCost))} />
+                <CardCell title="Planned Quantity" value={data?.plannedQuantity} />
+                <CardCell title="Revised Quantity" value={data?.revisedQuantity ? data?.revisedQuantity : "N/A"} />
+                <CardCell title="Second Review" value={data?.secondReview ? data?.secondReview : "N/A"} />
+                <CardCell title="Total Cost" value={formatDecimals(Number(data?.totalCost))} />
               </div>
-              
-              <div className="">
-                <div className="flex gap-8">
-                  <div className="flex flex-col text-sm w-[180px]">
-                    <p className="font-semibold text-[#98A2B3]">Unit Cost (USD)</p>
-                    <p className="text-[#40474F] font-medium">
-                      ${data?.unitCost}
-                    </p>
-                  </div>
-                  <div className="flex flex-col text-sm w-[180px]">
-                    <p className="font-semibold text-[#98A2B3]">Total Cost (USD)</p>
-                    <p className="text-[#40474F] font-medium">
-                      ${data?.totalCost?.toFixed(4)}
-                    </p>
-                  </div>
-                  <div className="flex flex-col text-sm w-[180px]">
-                    <p className="font-semibold text-[#98A2B3]">Funding Source</p>
-                    <p className="text-[#40474F] font-medium">
-                      {data?.fundingSource}
-                    </p>
-                  </div>
-                </div> 
-
-                <div className="flex gap-8 mt-4">
-                  <div className="flex flex-col text-sm w-[180px]">
-                    <p className="font-semibold text-[#98A2B3]">Created At</p>
-                    <p className="text-[#40474F] font-medium">
-                      {data?.createdAt || 'N/A'}
-                    </p>
-                  </div>
-                  <div className="flex flex-col text-sm w-[180px]">
-                    <p className="font-semibold text-[#98A2B3]">Updated At</p>
-                    <p className="text-[#40474F] font-medium">
-                      {data?.updatedAt || 'N/A'}
-                    </p>
-                  </div>
-                </div>
+              <div className="flex gap-8">
+                <CardCell title="Planned Order Date" value={data?.plannedOrderDate} />
+                <CardCell title="Planned Delivery Date" value={data?.plannedDeliveryDate} />
+              </div>
+              <div className="flex gap-8">
+                <CardCell title="Created At" value={data?.createdAt} />
+                <CardCell title="Updated At" value={data?.updatedAt} />
               </div>
             </div>
 

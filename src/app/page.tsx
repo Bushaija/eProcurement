@@ -65,22 +65,29 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
   const orderColumns: ColumnDef<TSelectPurchaseOrderSchema>[] = [
     {
       accessorKey: "PURCHASE_ORDER_NUMBER",
-      header: () => <div className="text-xs font-bold">Order ID</div>,
+      header: () => <div className="text-xs font-bold">
+        Shipment ID
+      </div>,
       cell: ({ row }) => {
         return (
-          <div className="min-w-[70px] text-[#40474F]">
+          <div className="min-w-[80px] text-[#40474F]">
             {<span className="">#{row.original.id}</span>}
           </div>
         );
       },
     },
     {
-      accessorKey: "itemType",
-      header: () => <div className="text-xs font-bold">Item Type</div>,
+      accessorKey: "ITEM_NAME",
+      header: () => <div className="text-xs font-bold">
+        Item Name
+      </div>,
       cell: ({ row }) => {
-        return <div className="text-[#40474F]">{row.original.itemType}</div>;
+        return (
+          <div className="w-[80px] text-[#40474F]">
+            {<span className="">{(row.original.plannedUnit).split(" ").slice(0,3).join(" ")}</span>}
+          </div>
+        );
       },
-      enableColumnFilter: true,
     },
     {
       accessorKey: "category",
@@ -88,7 +95,6 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       cell: ({ row }) => {
         return <div className="text-[#40474F]">{row.original.category}</div>;
       },
-      enableColumnFilter: true, // Make sure filtering is enabled for this column
     },
     {
       accessorKey: "PLANNED_ORDER_DATE",
@@ -117,15 +123,8 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       accessorKey: "PLANNED_QUANTITY",
       header: ({ column }) => {
         return (
-          <div className="min-w-[70px]">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-1 p-0 hover:bg-transparent"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              <span className="text-xs font-bold">Quantity</span>
-              <SortIcon />
-            </Button>
+          <div className="min-w-[70px] text-xs font-bold">
+              Quantity
           </div>
         );
       },
@@ -141,15 +140,8 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       accessorKey: "UNIT_COST",
       header: ({ column }) => {
         return (
-          <div className="min-w-[100px]">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-1 p-0 hover:bg-transparent"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              <span className="text-xs font-bold">Unit Cost USD</span>
-              <SortIcon />
-            </Button>
+          <div className="text-xs font-bold min-w-[100px]">
+              <span className="">Unit Cost USD</span>
           </div>
         );
       },
@@ -165,15 +157,8 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       accessorKey: "TOTAL_COST",
       header: ({ column }) => {
         return (
-          <div className="min-w-[100px]">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-1 p-0 hover:bg-transparent"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              <span className="text-xs font-bold">Total Cost USD</span>
-              <SortIcon />
-            </Button>
+          <div className="min-w-[100px] text-xs font-bold">
+              Total Cost USD
           </div>
         );
       },
@@ -187,7 +172,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
     },
     {
       accessorKey: "STATUS",
-      header: () => <div className="text-xs font-bold">Status</div>,
+      header: () => <div className="text-xs text-center font-bold">Status</div>,
       cell: ({ row }) => {
         return (
           <div className="text-[#40474F]">
@@ -196,39 +181,14 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
                 {row.original.status}
               </span>
             ) : (
-              <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">
+              <span className="text-[#F29425] text-center bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">
                 {row.original.status}
               </span>
             )}
           </div>
         );
       },
-    },
-    {
-      accessorKey: "action",
-      header: () => <div className="text-xs font-bold">Action</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2.5">
-            <button
-              onClick={() =>
-                router.push(`/purchase-orders/edit/${row.original.id}`)
-              }
-            >
-              <PencilIcon className="text-[#667185] h-5" />
-            </button>
-            <button
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedOrderID(row.original.id); // here
-              }}
-            >
-              <Trash2 className="text-[#667185] h-5" />
-            </button>
-          </div>
-        );
-      },
-    },
+    }
   ];
   
   const handleOrderClick = (id: string) => {
@@ -266,17 +226,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
             Request and view all procurement requests.
           </p>
         </div>
-        {/* <Button
-          onClick={handleClick}
-          disabled={isLoading}
-          className="bg-[rgb(114,1,253)] hover:bg-[#430194] px-4 py-3 rounded-[10px] text-white"
-        >
-          {
-            isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : ("Create Purchase Order")
-          }
-        </Button> */}
+        
       </div>
 
       <div className="flex gap-4 mt-4 max-sm:flex-wrap max-sm:gap-5">
@@ -346,6 +296,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
         </p>
         <div className="rounded-[20px] mt-4">
           <DataTable
+            showPagination={false}
             columns={orderColumns}
             data={data || []}
             rowClick={(id: string) => handleOrderClick(id)}
