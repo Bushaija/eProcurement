@@ -24,8 +24,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDeletePurchaseOrder } from "@/features/purchase-orders/api/use-delete-order";
 import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
-import { TSelectPurchaseOrderSchema } from "@/db/schema";
+import { TSelectPurchaseOrderReviewSchema, TSelectPurchaseOrderSchema } from "@/db/schema";
 import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-orders";
+import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/api/use-get-reviews";
 
   
   interface DashboardProps {}
@@ -38,10 +39,20 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
     const [messageApi, contextHolder] = message.useMessage();
     
     const { mutate } = useDeletePurchaseOrder(selectedOrderID);
-    
-    const { data, isPending, error, refetch } = useGetPurchaseOrders()
+    const { 
+       data: shipmentData,
+       isPending: shipmentIsPending,
+       error: shipmentError,
+       refetch: shipmentRefetch 
+    } = useGetPurchaseOrders()
+    const { 
+      data: poReviewData, 
+      isPending: poReviewIsPending, 
+      error: poReviewEror, 
+      refetch: poReviewRefetch 
+    } = useGetPurchaseOrderReviews()
 
-    if (isPending) {
+    if (shipmentIsPending || poReviewIsPending) {
       return (
         <Layout>
           <Skeleton
@@ -53,12 +64,11 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       );
     }
 
-    console.log("error: ", error);
   
-    if (error) {
+    if (shipmentError || poReviewEror) {
       messageApi.open({
         type: "error",
-        content: "Error fetching purchase orders",
+        content: "Error fetching shipment items",
       });
     }
   
@@ -198,17 +208,18 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
   const handleDeleteOrder = () => {
     mutate(undefined, {
       onSuccess: () => {
-        refetch(); // Ensure refetch is defined and fetches the correct data
+        poReviewRefetch();
+        poReviewRefetch();
         messageApi.open({
           type: "success",
-          content: "Purchase order deleted successfully",
+          content: "shipment items deleted successfully",
         });
-        setIsModalOpen(false); // Close the modal after successful deletion
+        setIsModalOpen(false);
       },
       onError: (err) => {
         messageApi.open({
           type: "error",
-          content: err.message || "An error occurred while deleting the purchase order.",
+          content: err.message || "An error occurred while deleting the shipment items.",
         });
       },
     });
@@ -223,7 +234,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
             Dashboard
           </p>
           <p className="text-[#64707D] text-sm font-normal max-sm:text-xs">
-            Request and view all procurement requests.
+            Request and view all shipments.
           </p>
         </div>
         
@@ -232,13 +243,13 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       <div className="flex gap-4 mt-4 max-sm:flex-wrap max-sm:gap-5">
         <StatisticsCard
           icon={<TotalOrderIcon />}
-          value={(data?.length) ? String(data?.length) : "0"}
-          name={`Total order${data && data.length > 1 ? "s" : ""}`}
+          value={(shipmentData?.length) ? String(shipmentData?.length) : "0"}
+          name={`Total Shipment item${shipmentData && shipmentData.length > 1 ? "s" : ""}`}
         />
         <StatisticsCard
         icon={<TotalCostIcon />}
-        value={data
-          ? data.reduce(
+        value={shipmentData
+          ? shipmentData.reduce(
               (acc: number, curr: TSelectPurchaseOrderSchema) =>
                 acc + (curr.totalCost ? curr.totalCost : 0),
               0
@@ -249,16 +260,16 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
       />
         <StatisticsCard
           icon={<PendingOrderIcon />}
-          value={String(data
-            ? data.filter(
-                (order: TSelectPurchaseOrderSchema) =>
-                  order.status === "PLANNED"
+          value={String(poReviewData
+            ? poReviewData.filter(
+                (order: TSelectPurchaseOrderReviewSchema) =>
+                  order.shipmentStatus?.toLowerCase().trim() === "planned"
               ).length
             : 0)}
-          name={`Pending order${
-            data && data.filter(
-              (order: TSelectPurchaseOrderSchema) =>
-                order.status === "PLANNED"
+          name={`Planned shipment${
+            poReviewData && poReviewData.filter(
+              (order: TSelectPurchaseOrderReviewSchema) =>
+                order.shipmentStatus?.toLowerCase().trim() === "planned"
             ).length > 1
               ? "s"
               : ""
@@ -266,16 +277,16 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
         />
         <StatisticsCard
           icon={<ApprovedOrderIcon />}
-          value={String(data
-            ? data.filter(
-                (order: TSelectPurchaseOrderSchema) =>
-                  order.status === "COMPLETED"
+          value={String(poReviewData
+            ? poReviewData.filter(
+                (order: TSelectPurchaseOrderReviewSchema) =>
+                  order.shipmentStatus.toLowerCase().trim() === "received"
               ).length
             : 0)}
-          name={`Approved order${
-            data && data.filter(
-              (order: TSelectPurchaseOrderSchema) =>
-                order.status === "COMPLETED"
+          name={`Received shipment${
+            poReviewData && poReviewData.filter(
+              (order: TSelectPurchaseOrderReviewSchema) =>
+                order.shipmentStatus.toLowerCase().trim() === "received"
             ).length > 1
               ? "s"
               : ""
@@ -289,7 +300,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
 
     <section className="mt-4">
         <p className="text-[#121417] text-[20px] font-semibold">
-          Recent Purchase Orders
+          Recent Shipment Items
         </p>
         <p className="text-[#64707D] font-light">
           You are viewing Recent Purchase Orders
@@ -298,7 +309,7 @@ import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-ord
           <DataTable
             showPagination={false}
             columns={orderColumns}
-            data={data || []}
+            data={shipmentData || []}
             rowClick={(id: string) => handleOrderClick(id)}
             searchBy="category"
           />
