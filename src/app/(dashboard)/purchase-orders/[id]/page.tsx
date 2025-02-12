@@ -16,7 +16,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { calculateDeliveryStatus, formatDateTime, formatDecimals, getShipmentStatus } from "@/lib/utils";
 import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/api/use-get-reviews";
-import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 
 interface CardCellProps {
   title?: string;
@@ -31,6 +30,14 @@ const CardCell = ({ title, value, isMainTitle = false }: CardCellProps) => {
       {value}
     </p>
   </div>
+}
+
+const ShipmentStatusCell: React.FC<{ status: string }> = ({ status }) => {
+  if(status === "PLANNED") {
+    return <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{status}</span>
+  }
+  
+  return <div className="text-[#22a8dd] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">{status}</div>
 }
   
 interface OrderDetailsProps {}
@@ -92,7 +99,6 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
     : "Planned delivery date is not available.";
 
     const shipmentStatus = getShipmentStatus(shipmentItemData ?? null, poReviewData ?? null);
-    console.log("shipment status: ", shipmentStatus)
 
     if (isLoading || isPoReviewDataLoading) {
       return (
@@ -171,16 +177,7 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
               <Separator orientation="vertical" />
               <div>
                 <span className="text-[#98A2B3] font-semibold">Shipment status</span>
-                {" "}
-                {
-                  shipmentStatus === "PLANNED" 
-                  ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{shipmentStatus}</span>) 
-                  : ( 
-                      <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                        {shipmentStatus}
-                      </span>
-                  )
-                }
+                <ShipmentStatusCell status = {String(shipmentStatus)} />
               </div>
               <Separator orientation="vertical" />
               <div className="text-">
@@ -191,7 +188,7 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
                       : "text-[#10A142] bg-[#EAFFF1]" // Green for ongoing
                   } px-3 py-1.5 rounded-[10px] text-sm font-medium`}
                 >
-                  {msg}
+                  {!(shipmentStatus?.toLocaleLowerCase().trim() === "planned") && msg}
                 </span>
               </div>
             </div>
