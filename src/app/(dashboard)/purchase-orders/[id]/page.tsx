@@ -14,7 +14,9 @@ import { Separator } from "@/components/ui/separator"
 import { Loader2, PencilIcon, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { calculateDeliveryStatus, formatDateTime, formatDecimals } from "@/lib/utils";
+import { calculateDeliveryStatus, formatDateTime, formatDecimals, getShipmentStatus } from "@/lib/utils";
+import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/api/use-get-reviews";
+import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 
 interface CardCellProps {
   title?: string;
@@ -75,19 +77,24 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
     ];
 
     const {
-      data,
+      data: shipmentItemData,
       isLoading,
       isError
     } = useGetPurchaseOrder(Number(params.id));
+    const {
+      data: poReviewData,
+      isLoading: isPoReviewDataLoading,
+      isError: isPoReviewDataError,
+    } = useGetPurchaseOrderReviews()
 
-    const msg = data?.plannedDeliveryDate 
-    ? calculateDeliveryStatus(data.plannedDeliveryDate) 
+    const msg = shipmentItemData?.plannedDeliveryDate 
+    ? calculateDeliveryStatus(shipmentItemData.plannedDeliveryDate) 
     : "Planned delivery date is not available.";
 
-    console.log("message: ", msg);
-  
+    const shipmentStatus = getShipmentStatus(shipmentItemData ?? null, poReviewData ?? null);
+    console.log("shipment status: ", shipmentStatus)
 
-    if (isLoading) {
+    if (isLoading || isPoReviewDataLoading) {
       return (
         <>
           <Skeleton className="py-5 px-5" active paragraph={{ rows: 6 }} />
@@ -95,7 +102,7 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
       );
     }
   
-    if (isError) {
+    if (isError || isPoReviewDataError) {
       messageApi.open({
         type: "error",
         content: "Error fetching order",
@@ -155,30 +162,27 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
           <Separator />
 
           <article className="w-full"> 
-            <CardCell value={data?.plannedUnit} isMainTitle={true} />
+            <CardCell value={shipmentItemData?.plannedUnit} isMainTitle={true} />
             <div className="flex items-start gap-6 mt-4 h-5">
               <div className="flex  gap-4 text-[#98A2B3] font-semibold">
-                <p>Order ID: </p>
-                <span className="text-[#40474F]">#{data?.id}</span>
+                <p>Shipment ID: </p>
+                <span className="text-[#40474F]">#{shipmentItemData?.id}</span>
               </div>
-
               <Separator orientation="vertical" />
-              
               <div>
-                <span className="text-[#98A2B3] font-semibold">Order status</span>
+                <span className="text-[#98A2B3] font-semibold">Shipment status</span>
                 {" "}
                 {
-                  data?.status === "PLANNED" 
-                  ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{data?.status}</span>) 
+                  shipmentStatus === "PLANNED" 
+                  ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{shipmentStatus}</span>) 
                   : ( 
                       <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                        {data?.status}                        </span>
+                        {shipmentStatus}
+                      </span>
                   )
                 }
               </div>
-
               <Separator orientation="vertical" />
-
               <div className="text-">
                 <span
                   className={`${
@@ -194,34 +198,34 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
     
             <div className="mt-10 flex flex-col gap-4 flex-wrap">
               <div className="flex gap-8 w-full">
-                <CardCell title="Item Category" value={data?.category} />
-                <CardCell title="Division" value={data?.allocationDepartment} />
-                <CardCell title="Pack Size" value={data?.packSize} />
-                <CardCell title="Funding Source" value={data?.fundingSource} />
+                <CardCell title="Shipment Category" value={shipmentItemData?.category} />
+                <CardCell title="Division" value={shipmentItemData?.allocationDepartment} />
+                <CardCell title="Pack Size" value={shipmentItemData?.packSize} />
+                <CardCell title="Funding Source" value={shipmentItemData?.fundingSource} />
               </div>
               <div className="flex gap-8">
-                <CardCell title="Unit Cost" value={formatDecimals(Number(data?.unitCost))} />
-                <CardCell title="Planned Quantity" value={data?.plannedQuantity} />
-                <CardCell title="Revised Quantity" value={data?.revisedQuantity ? data?.revisedQuantity : "N/A"} />
-                <CardCell title="Second Review" value={data?.secondReview ? data?.secondReview : "N/A"} />
+                <CardCell title="Unit Cost" value={formatDecimals(Number(shipmentItemData?.unitCost))} />
+                <CardCell title="Planned Quantity" value={shipmentItemData?.plannedQuantity} />
+                <CardCell title="Revised Quantity" value={shipmentItemData?.revisedQuantity ? shipmentItemData?.revisedQuantity : "N/A"} />
+                <CardCell title="Second Review" value={shipmentItemData?.secondReview ? shipmentItemData?.secondReview : "N/A"} />
               </div>
               <div className="flex gap-8">
-                <CardCell title="Total Cost" value={formatDecimals(Number(data?.totalCost))} />
-                <CardCell title="Planned Order Date" value={data?.plannedOrderDate} />
-                <CardCell title="Planned Delivery Date" value={data?.plannedDeliveryDate} />
+                <CardCell title="Total Cost" value={formatDecimals(Number(shipmentItemData?.totalCost))} />
+                <CardCell title="Planned Order Date" value={shipmentItemData?.plannedOrderDate} />
+                <CardCell title="Planned Delivery Date" value={shipmentItemData?.plannedDeliveryDate} />
               </div>
               <div className="flex gap-8">
-                <CardCell title="Created At" value={formatDateTime(String(data?.createdAt))} />
-                <CardCell title="Updated At" value={formatDateTime(String(data?.updatedAt))} />
+                <CardCell title="Created At" value={formatDateTime(String(shipmentItemData?.createdAt))} />
+                <CardCell title="Updated At" value={formatDateTime(String(shipmentItemData?.updatedAt))} />
               </div>
             </div>
 
             <div className="mt-8">
                 <Button
-                  onClick={() => router.push(`/reviews/new?orderId=${data?.id}`)}
+                  onClick={() => router.push(`/reviews/new?orderId=${shipmentItemData?.id}`)}
                   className="bg-[#7201FD] hover:bg-[#430194] px-6 py-3 rounded-[10px] text-white"
                 >
-                  Evaluate
+                  Implement Shipment{` (${shipmentItemData?.id})`}
                 </Button>
             </div>
           </article>

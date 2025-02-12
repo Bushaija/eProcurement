@@ -1,6 +1,7 @@
 import { parse } from "csv-parse/sync"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { TSelectPurchaseOrderReviewSchema, TSelectPurchaseOrderSchema } from "@/db/schema"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -233,6 +234,19 @@ export const formatDateTime = (dateTimeStr: string): string => {
 
   // Return formatted string: YYYY-MM-DD HH:MM
   return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
+export const getShipmentStatus = (
+  poData: TSelectPurchaseOrderSchema | null,
+  poReviewData: TSelectPurchaseOrderReviewSchema[] | null
+): string | null => {
+  if (!poData || !poReviewData) return null;
+
+  const matchingReview = poReviewData.find(
+    (review) => review.purchaseOrderId === poData.id
+  );
+
+  return matchingReview ? matchingReview.shipmentStatus : null;
 };
 
 
