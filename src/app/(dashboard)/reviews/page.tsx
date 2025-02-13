@@ -300,7 +300,7 @@ interface DashboardProps {}
         <div className="flex justify-between items-center">
           <div>
             <p className="text-[#121417] text-2xl font-bold max-sm:text-xl">
-              Shipment implementation details
+              Shipment Implementation Details
             </p>
             <p className="text-[#64707D] text-sm font-normal max-sm:text-xs">
               You're viewing all shipments.
