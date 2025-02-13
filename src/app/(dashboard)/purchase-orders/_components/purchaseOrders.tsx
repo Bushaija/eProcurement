@@ -279,7 +279,8 @@ type ImportDataType = Record<string, any>;
             // onImport={() => {}}
             onImport={(parsedData) => {
               const formattedData = formatCsvRows(parsedData, formatInputData);
-              setImportData((prev) => [...prev, ...formattedData])
+              setImportData((prev) => [...prev, ...formattedData]);
+              console.log("parsed data::", parsedData);
             }}
             className="self-end"
         />

@@ -2,6 +2,7 @@ import { parse } from "csv-parse/sync"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { TSelectPurchaseOrderReviewSchema, TSelectPurchaseOrderSchema } from "@/db/schema"
+import { Item } from "@radix-ui/react-select"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -142,7 +143,7 @@ export function formatInputData(data: InputData): Record<string, any> {
     plannedUnit: data.plannedUnit.trim(),
     allocationDepartment: data.allocationDepartment.trim(),
     packSize: data.packSize.trim(),
-    plannedOrderDate: new Date(data.plannedOrderDate).toISOString().split("T")[0], // Ensure YYYY-MM-DD
+    plannedOrderDate: new Date(data.plannedOrderDate).toISOString().split("T")[0], 
     plannedDeliveryDate: new Date(data.plannedDeliveryDate).toISOString().split("T")[0],
     plannedQuantity: Math.max(0, data.plannedQuantity), // Prevent negative values
     revisedQuantity: Math.max(0, data.revisedQuantity), // Prevent negative values
@@ -150,12 +151,11 @@ export function formatInputData(data: InputData): Record<string, any> {
     unitCost: parseFloat(data.unitCost.toFixed(2)), // Ensure 2 decimal places
     totalCost: data.totalCost ? parseFloat(data.totalCost.toFixed(2)) : undefined,
     fundingSource: data.fundingSource?.trim() || null,
-    status: data.status.toUpperCase(), // Normalize enum value to uppercase
+    status: data.status.toUpperCase(),
   };
 }
 
 export function formatCsvRows(csvData: any, formatFn: (data: InputData) => Record<string, any>) {
-  // Parse CSV into an array of objects
   const parsedRows: InputData[] = parse(csvData, {
     columns: true, // Parse header row as object keys
     skip_empty_lines: true,
@@ -177,7 +177,7 @@ export function aggregateByKey<T>(
       const value = Number(item[valueKey]); // Convert value to number
 
       acc[groupKey] = acc[groupKey] || { ...item, [valueKey]: 0 };
-      acc[groupKey][valueKey] = (acc[groupKey][valueKey] as number) + value;
+      acc[groupKey][valueKey] = ((acc[groupKey][valueKey] as unknown) as number) + value;
       
       return acc;
     }, {} as Record<string, T>)
@@ -248,6 +248,26 @@ export const getShipmentStatus = (
 
   return matchingReview ? matchingReview.shipmentStatus : null;
 };
+
+export const calculateTotalCostByFundingSource = (items: TSelectPurchaseOrderSchema[], fundingSourceName: string): number => {
+  const normalizedFundingSource = fundingSourceName.trim().toLowerCase();
+
+  return items.reduce((totalCost, item) => {
+    const itemFundingSource = item.fundingSource?.trim().toLowerCase();
+    if (itemFundingSource === normalizedFundingSource) {
+      totalCost += Number(item.unitCost) * Number(item.plannedQuantity);
+    }
+
+    return totalCost;
+  }, 0);
+};
+
+export const calculateTotalIncurredCost = (items: any[]): number => {
+  return items.reduce((totalCost, item) => {
+    return totalCost + item.unitCost * item.plannedQuantity;
+  }, 0);
+};
+
 
 
 

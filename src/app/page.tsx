@@ -30,6 +30,7 @@ import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/ap
 import { SmallDataTable } from "@/components/ui/table/small-data-table";
 import { useMergedPurchaseData } from "@/hooks/use-merge-items-data";
 import { useTableColumns } from "@/hooks/use-get-table-columns";
+import { calculateTotalCostByFundingSource, calculateTotalIncurredCost, formatDecimals } from "@/lib/utils";
 
 const selectedColumns = [
   "id", 
@@ -76,6 +77,8 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
       error: poReviewEror, 
       refetch: poReviewRefetch 
     } = useGetPurchaseOrderReviews()
+
+    // console.log("funding source: ", calculateTotalCostByFundingSource(shipmentData || [], "tbd"))
 
     if (shipmentIsPending || poReviewIsPending) {
       return (
@@ -276,36 +279,31 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
         
         <StatisticsCard
           icon={<TotalCostIcon />}
-          value={shipmentData
-            ? shipmentData.reduce(
-                (acc: number, curr: TSelectPurchaseOrderSchema) =>
-                  acc + (curr.totalCost ? curr.totalCost : 0),
-                0
-              ).toLocaleString("en-US")
-            : ""}
-          name="Total cost incurred"
+          value={calculateTotalIncurredCost(shipmentData || []).toLocaleString("en-US")}
+          name="Total budget incurred"
+          isUSD
+        />
+
+        <StatisticsCard
+          icon={<ApprovedOrderIcon />}
+          value={
+            formatDecimals(
+              calculateTotalIncurredCost(shipmentData || []) - 
+              calculateTotalCostByFundingSource(shipmentData || [], "tbd")
+            ).toLocaleString("en-US")
+          }
+          name="Available budget"
           isUSD
         />
 
         <StatisticsCard
           icon={<PendingOrderIcon />}
-          value={String(poReviewData
-            ? poReviewData.filter(
-                (order: TSelectPurchaseOrderReviewSchema) =>
-                  order.shipmentStatus?.toLowerCase().trim() === "planned"
-              ).length
-            : 0)}
-          name={`Planned shipment${
-            poReviewData && poReviewData.filter(
-              (order: TSelectPurchaseOrderReviewSchema) =>
-                order.shipmentStatus?.toLowerCase().trim() === "planned"
-            ).length > 1
-              ? "s"
-              : ""
-          }`}
+          value={formatDecimals(calculateTotalCostByFundingSource(shipmentData || [], "tbd")).toLocaleString("en-US")}
+          name="Budget gap"
+          isUSD
         />
 
-        <StatisticsCard
+        {/* <StatisticsCard
             icon={<ApprovedOrderIcon />}
             value={String(poReviewData
               ? poReviewData.filter(
@@ -321,7 +319,7 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
                 ? "s"
                 : ""
             }`}
-        />
+        /> */}
 
       </div>
 
@@ -336,7 +334,7 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
           <SmallDataTable 
             data = {filteredData}
             columns = {columns}
-            totalItems = {filteredData.length}
+            totalItems = {5}
           />
           {/* <DataTable
             showPagination={false}
