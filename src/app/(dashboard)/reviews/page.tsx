@@ -300,10 +300,10 @@ interface DashboardProps {}
         <div className="flex justify-between items-center">
           <div>
             <p className="text-[#121417] text-2xl font-bold max-sm:text-xl">
-              Purchase Order Follow-up
+              Shipment implementation details
             </p>
             <p className="text-[#64707D] text-sm font-normal max-sm:text-xs">
-              View and evaluate all purchase orders.
+              You're viewing all shipments.
             </p>
           </div>
           {/* <Button
