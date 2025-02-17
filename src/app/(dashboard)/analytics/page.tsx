@@ -1,10 +1,10 @@
 import {
-    TabsContent
-    ,TabsList
+    // TabsContent
+    TabsList
     ,TabsTrigger 
 } from "@radix-ui/react-tabs";
 import { Tabs } from "@/components/ui/tabs";
-import Dashboard from "./_components/dashboard";
+// import Dashboard from "./_components/dashboard";
 import PageContainer from "@/components/layout/page-container";
 
 export const metadata = {
@@ -48,9 +48,9 @@ export default function page() {
                     })
                 }
             </TabsList>
-            <TabsContent value="execution-status" className="space-y-4">
+            {/* <TabsContent value="execution-status" className="space-y-4">
                 <Dashboard />
-            </TabsContent>
+            </TabsContent> */}
         </Tabs>
     </PageContainer>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+// import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart, Sector } from "recharts"
 import { message, Skeleton } from "antd";
 import { PieSectorDataItem } from "recharts/types/polar/Pie"
