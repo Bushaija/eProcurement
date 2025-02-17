@@ -17,10 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PurchaseOrderDetails, PurchaseOrderReviewStatus } from "@/types";
-import { useQuery } from "@tanstack/react-query";
 import { Modal, Skeleton, message } from "antd";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEditPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-update-review";
 import { useGetPurchaseOrderReview } from "@/features/purchase-order-reviews/api/use-get-review";
 
@@ -47,83 +46,83 @@ const FormSchema = z.object({
 
 const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
   const router = useRouter();
-  const params = useParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<any>();
-  const [messageApi, contextHolder] = message.useMessage();
-  const { mutate, isPending } = useEditPurchaseOrderReview(Number(params.id));
+const params = useParams();
 
-  const {
-    data,
-    isLoading,
-    isError
-  } = useGetPurchaseOrderReview(Number(params.id));
+// State Hooks
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [selectedOrder, setSelectedOrder] = useState<any>();
 
-  // const { isPending, data } = useQuery({
-  //   queryKey: ["order"],
-  //   queryFn: async () => {
-  //     const response = await fetch(`/api/reviews/${params.id}`).then((res) =>
-  //       res.json()
-  //     );
-  //     return response.order;
-  //   },
-  // });
+// Ant Design Message Hook
+const [messageApi, contextHolder] = message.useMessage();
 
+// React Query Hooks (Fetching & Mutating Data)
+const { data, isLoading, isError } = useGetPurchaseOrderReview(Number(params.id));
+const { mutate, isPending } = useEditPurchaseOrderReview(Number(params.id));
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    values: {
-        purchaseOrderCreationDate:data?.purchaseOrderCreationDate || "",
-        purchaseOrderNumber: data?.purchaseOrderNumber || "",
-        purchaseOrderIssueDate: data?.purchaseOrderIssueDate || "",
-        readTime:data?.readTime || "",
-        expectedDeliveryDate:data?.expectedDeliveryDate || "",
-        currency:data?.currency || "",
-        orderQuantity: data?.orderQuantity || 0,
-        receivedQuantity:data?.receivedQuantity || 0,
-        receivedDate:data?.receivedDate || "",
-        balancedQuantity:data?.balancedQuantity || 0,
-        shipmentStatus:data?.shipmentStatus || "PLANNED",
-        comments:data?.comments || "",
-    },
-  });
+// React Hook Form Setup (Must Be Called Before Any Conditional Returns)
+const form = useForm<z.infer<typeof FormSchema>>({
+  resolver: zodResolver(FormSchema),
+  values: {
+    purchaseOrderCreationDate: data?.purchaseOrderCreationDate || "",
+    purchaseOrderNumber: data?.purchaseOrderNumber || "",
+    purchaseOrderIssueDate: data?.purchaseOrderIssueDate || "",
+    readTime: data?.readTime || "",
+    expectedDeliveryDate: data?.expectedDeliveryDate || "",
+    currency: data?.currency || "",
+    orderQuantity: data?.orderQuantity || 0,
+    receivedQuantity: data?.receivedQuantity || 0,
+    receivedDate: data?.receivedDate || "",
+    balancedQuantity: data?.balancedQuantity || 0,
+    shipmentStatus: data?.shipmentStatus || "PLANNED",
+    comments: data?.comments || "",
+  },
+});
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const updatedOrder = {
-      purchaseOrderCreationDate: data.purchaseOrderCreationDate,
-      purchaseOrderNumber: data.purchaseOrderNumber,
-      purchaseOrderIssueDate: data.purchaseOrderIssueDate,
-      readTime: data.readTime,
-      expectedDeliveryDate: data.expectedDeliveryDate,
-      currency: data.currency,
-      orderQuantity: Number(data.orderQuantity),
-      receivedDate: data.receivedDate,
-      balancedQuantity: Number(data.balancedQuantity),
-      shipmentStatus: data.shipmentStatus as PurchaseOrderReviewStatus,
-      comments: data.comments,
-    };
-
-    mutate(updatedOrder, {
-      onSuccess: () => {
-        setIsModalOpen(true);
-        form.reset();
-      },
-      onError: () => {
-        messageApi.open({
-          type: "error",
-          content: "Error updating order",
-        });
-      },
+// Handle Error State (Ensure It's Not Inside a Conditional Return)
+useEffect(() => {
+  if (isError) {
+    messageApi.open({
+      type: "error",
+      content: "Error fetching order",
     });
+  }
+}, [isError, messageApi]);
+
+// Submit Handler
+const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const updatedOrder = {
+    purchaseOrderCreationDate: data.purchaseOrderCreationDate,
+    purchaseOrderNumber: data.purchaseOrderNumber,
+    purchaseOrderIssueDate: data.purchaseOrderIssueDate,
+    readTime: data.readTime,
+    expectedDeliveryDate: data.expectedDeliveryDate,
+    currency: data.currency,
+    orderQuantity: Number(data.orderQuantity),
+    receivedDate: data.receivedDate,
+    balancedQuantity: Number(data.balancedQuantity),
+    shipmentStatus: data.shipmentStatus as PurchaseOrderReviewStatus,
+    comments: data.comments,
   };
 
-  if (isPending) {
-    return (
-      <>
-        <Skeleton className="py-5 px-5" active paragraph={{ rows: 6 }} />
-      </>
-    );
-  }
+  mutate(updatedOrder, {
+    onSuccess: () => {
+      setIsModalOpen(true);
+      form.reset();
+    },
+    onError: () => {
+      messageApi.open({
+        type: "error",
+        content: "Error updating order",
+      });
+    },
+  });
+};
+
+// Handle Loading & Pending State After Hooks Are Called
+if (isLoading || isPending) {
+  return <Skeleton className="py-5 px-5" active paragraph={{ rows: 6 }} />;
+}
+
 
   return (
     <>
@@ -255,7 +254,6 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
             />
           </div>
 
-          </div>
           <div className="flex gap-5 mt-6 max-sm:flex-wrap">
             <FormField
               control={form.control}
@@ -282,6 +280,7 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
                 </FormItem>
               )}
             />
+            </div>
 
             
           <div className="flex gap-5 mt-6 max-sm:flex-wrap">

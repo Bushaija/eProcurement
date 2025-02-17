@@ -23,13 +23,14 @@ export const useEditPurchaseOrderReview = (id: number) => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Request updated");
-      queryClient.invalidateQueries({ queryKey: ["requests"] });
+      toast.success("Shipment implementation updated");
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
     },
     onError: () => {
-      toast.error("Failed to edit Request");
+      toast.error("Failed to edit shipment Implementation");
     },
   });
 
   return mutation;
 };
+

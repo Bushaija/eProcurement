@@ -53,6 +53,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c)=> {
     const { id } = c.req.valid("param");
     const updates = c.req.valid("json");
 
+    console.log("updates", updates);
+
     const [review] = await db.update(purchaseOrderReviewTable)
         .set(updates)
         .where(eq(purchaseOrderReviewTable.id, id))
