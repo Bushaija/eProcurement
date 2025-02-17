@@ -78,7 +78,7 @@ interface DashboardProps {}
     const reviewColumns: ColumnDef<TSelectPurchaseOrderReviewSchema>[] = [
       {
         accessorKey: "PROCUREMENT_REQUEST_ID",
-        header: () => <div className="w-[170px] text-xs font-bold">Request ID</div>,
+        header: () => <div className="w-[170px] text-xs font-bold">Shipment Id</div>,
         cell: ({ row }) => {
           return (
             <div className="text-[#40474F]">

@@ -99,6 +99,8 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
         content: "Error fetching shipment items",
       });
     }
+
+    const totalShipments = Array.isArray(shipmentData) ? shipmentData.length : 0;
   
   // const orderColumns: ColumnDef<TSelectPurchaseOrderSchema | TSelectPurchaseOrderReviewSchema>[] = [
   //   {
@@ -271,12 +273,12 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
       </div>
 
       <div className="flex gap-4 mt-4 max-sm:flex-wrap max-sm:gap-5">
+        
         <StatisticsCard
           icon={<TotalOrderIcon />}
-          value={(shipmentData?.length) ? String(shipmentData?.length) : "0"}
-          name={`Total Shipment item${shipmentData && shipmentData.length > 1 ? "s" : ""}`}
+          value={String(totalShipments)}
+          name={`Total Shipment item${totalShipments !== 1 ? "s" : ""}`}
         />
-        
         <StatisticsCard
           icon={<TotalCostIcon />}
           value={calculateTotalIncurredCost(shipmentData || []).toLocaleString("en-US")}
