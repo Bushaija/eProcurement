@@ -42,10 +42,6 @@ const FormSchema = z.object({
   expectedDeliveryDate: z.string({
     required_error: "expected delivery date is required"
   }),
-  unitPriceDdp: z.coerce.number(),
-  totalCostDdp: z.coerce.number(),
-  unitPriceCip: z.coerce.number(),
-  totalCostCip: z.coerce.number(),
   currency: z.string(),
   orderQuantity: z.coerce.number().int().positive(),
   receivedQuantity: z.coerce.number(),
@@ -79,12 +75,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         purchaseOrderIssueDate: "",
         readTime: "",
         expectedDeliveryDate: "",
-
-        unitPriceDdp: 0.0,
-        totalCostDdp: 0.0,
-        unitPriceCip: 0.0,
-        totalCostCip: 0.0,
-        
         currency: "USD",
         orderQuantity: 0,
         receivedQuantity: 0,
@@ -114,10 +104,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
         purchaseOrderIssueDate: data.purchaseOrderIssueDate || null,
         readTime: data.readTime || null,
         expectedDeliveryDate: data.expectedDeliveryDate || null,
-        unitPriceDdp: data.unitPriceDdp || 0.0,
-        totalCostDdp: data.totalCostDdp || 0.0,
-        unitPriceCip: data.unitPriceCip || 0.0,
-        totalCostCip: data.totalCostCip || 0.0,
         currency: data.currency || "USD",
         orderQuantity: Number(data.orderQuantity) || 0,
         receivedQuantity: Number(data.receivedQuantity),
@@ -159,7 +145,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
       </div>
       <div className="bg-white rounded-[10px] mt-4 p-4 max-sm:mt-2">
         <p className="text-[#2B2829] text-xl font-semibold">
-          Create New Purchase Order Review 
+          Create Shipment Implementation 
         </p>
         <main className="flex items-start justify-center gap-4 bg-white rounded-[10px] mt- p-2 max-sm:mt-4">
  
@@ -268,54 +254,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />
 
-
-        <FormField
-          control={form.control}
-          name="totalCostDdp"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Total cost (DDP)</FormLabel>
-              <FormControl>
-                <Input type="number" step={"0.01"} placeholder="Enter total cost DDP" {...field} min={0}/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="unitPriceCip"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Unit Price CIP</FormLabel>
-              <FormControl>
-                <Input type="number" step={"0.01"} {...field} min={0.0} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-</div>
-<div className="flex items-center justify-center gap-4">
-
-        <FormField
-          control={form.control}
-          name="totalCostCip"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Total cost CIP</FormLabel>
-              <FormControl>
-                <Input type="number" step={"0.01"} {...field} min={0} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Planned Delivery Date */}
-        <FormField
+<FormField
           control={form.control}
           name="currency"
           render={({ field }) => (
@@ -343,7 +282,9 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
           )}
         />
 
-        </div>
+
+</div>
+
 
 </div>
 <div className="flex gap-5 mt-6 max-sm:flex-wrap">
@@ -407,19 +348,7 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
 
 
 <div className="flex items-center justify-center gap-4">
-            <FormField
-  control={form.control}
-  name="readTime"
-  render={({ field }) => (
-    <FormItem className="w-full">
-      <FormLabel>Read time</FormLabel>
-      <FormControl>
-        <Input type="date" placeholder="Enter the read time" {...field} min={new Date().toISOString().split("T")[0]} />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+            
 
 
 
@@ -532,9 +461,11 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderReviewProp
     
     </form>
   </Form>
+  <Suspense>
   <section className="w-full">
     <OrderDetailsComponent data={data}/>
   </section>
+  </Suspense>
 </main>
 
       </div>

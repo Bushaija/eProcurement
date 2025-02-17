@@ -4,7 +4,7 @@ import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
 import { db } from "@/db";
 import { purchaseOrderTable } from "@/db/schema";
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./purchase-orders.route";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, UploadCSV } from "./purchase-orders.route";
 import type { AppRouteHandler } from "../../lib/types";
 
 
@@ -75,6 +75,28 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c)=> {
 
 };
 
-// export const uploadCSV: AppRouteHandler<UploadCSV> = async (c) => {
-//     const purchaseOrders = c.req.parseBody();
-// }
+export const uploadCSV: AppRouteHandler<UploadCSV> = async (c) => {
+    const purchaseOrders = c.req.valid("json");
+
+    const inserted = await db
+        .insert(purchaseOrderTable)
+        .values(
+            purchaseOrders.map(value => ({
+                category: value.category,
+                plannedUnit: value.plannedUnit,
+                allocationDepartment: value.allocationDepartment,
+                packSize: value.packSize,
+                plannedOrderDate: value.plannedOrderDate,
+                plannedDeliveryDate: value.plannedDeliveryDate,
+                plannedQuantity: value.plannedQuantity,
+                revisedQuantity: value.revisedQuantity,
+                secondReview: value.secondReview,
+                unitCost: value.unitCost,
+                totalCost: value.totalCost,
+                fundingSource: value.fundingSource,
+                status: value.status,
+            }))
+        )
+        .returning();
+    return c.json(inserted as any, 200);
+};

@@ -10,10 +10,10 @@ export const searchParams = {
   page: parseAsInteger.withDefault(1),
   limit: parseAsInteger.withDefault(10),
   q: parseAsString, 
-  allocationDepartment: parseAsString.withDefault(''),
   category: parseAsString.withDefault(''),
-  itemType: parseAsString.withDefault(''), 
+  allocationDepartment: parseAsString.withDefault(''),
   plannedUnit: parseAsString.withDefault(''), 
+  shipmentStatuses: parseAsString,
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParams);

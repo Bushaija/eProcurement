@@ -1,13 +1,10 @@
 "use client"
 
-import {
-  ModalTrashIcon,
-} from "@/assets/icons/icons";
 import { DataTable } from '@/components/ui/table/data-table';
 import { Button } from "@/components/ui/button";
 import { useDeletePurchaseOrder } from "@/features/purchase-orders/api/use-delete-order";
 import { useGetPurchaseOrders } from "@/features/purchase-orders/api/use-get-orders";
-import { Modal, Skeleton, message } from "antd";
+import { Skeleton, message } from "antd";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -22,54 +19,10 @@ import { DataTableFilterBox } from "@/components/table/data-table-filter-box";
 import { DataTableResetFilter } from "@/components/table/data-table-reset-filter";
 import { DataTableExport } from "@/components/table/data-table-export";
 import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel} from "@tanstack/react-table";
-import { formatCsvRows, formatInputData } from "@/lib/utils";
-import { CsvImporter } from "./csv-importer";
-
-export const DIVISION_OPTIONS = [
-  { value: "BTD", label: "BTD"},
-  { value: "CS", label: "CS"},
-  { value: "HIV_AIDS_STIs", label: "HIV/AIDS & STIs"},
-  { value: "MCCH", label: "MCCH"},
-  { value: "MH", label: "MH"},
-  { value: "MOPD", label: "MOPD"},
-  { value: "MTD", label: "MTD"},
-  { value: "NCDs", label: "NCDs"},
-  { value: "NRL", label: "NRL"},
-  { value: "PHS_EPR", label: "PHS_EPR"},
-  { value: "RHCC", label: "RHCC"},
-  { value: "RIDS", label: "RIDS"},
-  { value: "SAMU", label: "SAMU"},
-  { value: "TB_Nutrition", label: "TB Nutrition"},
-  { value: "TB_Medicine", label: "TB Medicine"}
-];
-
-export const CATEGORY_OPTIONS = [
-  { value: 'ARV', label: 'ARV'},
-  { value: 'OIS', label: 'OIS'},
-  { value: 'BIOCHEMISTRY', label: 'BIOCHEMISTRY'},
-  { value: 'CD4', label: 'CD4'},
-  { value: 'General Consummables', label: 'General Consummables'},
-  { value: 'Genotyping', label: 'Genotyping'},
-  { value: 'Hematology', label: 'Hematology'},
-  { value: 'HIV EID', label: 'HIV EID'},
-  { value: 'HIV RTKs', label: 'HIV RTKs'},
-  { value: 'HIV VL Abbott', label: 'HIV VL Abbott'},
-  { value: 'HIV VL Roche', label: 'HIV VL Roche'},
-  { value: 'Other Tests', label: 'Other Tests'},
-  { value: 'PT', label: 'PT'},
-  { value: 'Hepatitis RDT', label: 'Hepatitis RDT'},
-  { value: 'Hepatitis VL', label: 'Hepatitis VL'},
-  { value: 'Hepatitis Self-Test', label: 'Hepatitis Self-Test'},
-  { value: 'Other Test', label: 'Other Test'},
-  { value: 'Hepatitis medicines ', label: 'Hepatitis medicines '},
-  { value: 'MALARIA', label: 'MALARIA'},
-  { value: 'Medicines\nLeprosy', label: 'Medicines\nLeprosy'},
-  { value: 'Public Family planning', label: 'Public Family planning'},
-  { value: 'SOCIAL MARKETING PF', label: 'SOCIAL MARKETING PF'},
-  { value: 'COMMUNITY', label: 'COMMUNITY'},
-  { value: 'Emergency obstetrical care ', label: 'Emergency obstetrical care '},
-  { value: 'Early infant MC  drugs and consumables', label: 'Early infant MC  drugs and consumables'},
-]
+import { useBulkCreateShipments } from "@/features/purchase-orders/api/use-bulk-create-orders";
+import { TInsertShipmentsSchema } from "@/db/schema"
+import { BATCH_SIZE, CATEGORY_OPTIONS, DIVISION_OPTIONS, orderSchema } from '@/constants/data';
+import { CsvImporter } from './csv-importer';
 
 type ImportDataType = Record<string, any>;
 
@@ -79,7 +32,7 @@ type ImportDataType = Record<string, any>;
   const PurchaseOrdersPage: React.FunctionComponent<DashboardProps> = () => {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [importData, setImportData] = React.useState<ImportDataType[]>([]);
+    const [importData, setImportData] = React.useState<TInsertShipmentsSchema[]>([]);
     const [selectedOrderID, setSelectedOrderID] = useState<number>();
     const [rowAction, setRowAction] = useState<DataTableRowAction<PurchaseOrder> | null>(null);
     const columns = React.useMemo(() => getColumns({ 
@@ -90,9 +43,12 @@ type ImportDataType = Record<string, any>;
       setSelectedOrderID,
       router,
      }),[setRowAction, isModalOpen, selectedOrderID, setIsModalOpen, setSelectedOrderID, router]);
+
+     const createShipments = useBulkCreateShipments();
     
     const [isLoading, setIsLoading] = useState(false);
-    const [isDeletingOrder, setIsDeletingOrder] = useState<boolean>(false);
+    
+    const [isImporting, setIsImporting] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
     const { mutate} = useDeletePurchaseOrder(selectedOrderID);
 
@@ -102,6 +58,12 @@ type ImportDataType = Record<string, any>;
     const isPending = purchaseOrdersQuery.isPending || purchaseOrdersQuery.isLoading;
     const error = purchaseOrdersQuery.error;
 
+    React.useEffect(() => {
+      if (data.length > 0) {
+        setImportData(data);
+      }
+    }, [data]);
+
     const {
       plannedUnitSearch,
       setPlannedUnitSearch,
@@ -109,9 +71,7 @@ type ImportDataType = Record<string, any>;
   
       allocationDepartmentFilter,
       categoryFilter,
-      itemTypeFilter,
-      setItemTypeFilter,
-      // setCategoryFilter,
+      setCategoryFilter,
       setAllocationDepartmentFilter,
       isAnyFilterActive,
       resetFilters
@@ -138,19 +98,9 @@ type ImportDataType = Record<string, any>;
       getCoreRowModel: getCoreRowModel(),
     });    
   
-    // const departmentOptions = [
-    //   { value: 'CP', label: 'Clinical Practice' },
-    //   { value: 'OP', label: 'Operations' },
-    //   { value: 'Admin', label: 'Administration' },
-    // ];
-  
-    // const itemTypeOptions = [
-    //   { value: 'medical', label: 'Medical' },
-    //   { value: 'non-medical', label: 'Non-Medical' },
-    // ];
     
   
-    if (isPending) {
+    if (isPending || isImporting) {
       return (
         <>
           <Skeleton
@@ -178,27 +128,6 @@ type ImportDataType = Record<string, any>;
     
     const handleOrderClick = (id: string) => {
       router.push(`/purchase-orders/${id}`);
-    };
-
-    const handleDeletePurchaseOrder = () => {
-      setIsDeletingOrder(true);
-      mutate(undefined, {
-        onSuccess: () => {
-          purchaseOrdersQuery.refetch();
-          messageApi.open({
-            type: "success",
-            content: "Purchase order deleted successfully",
-          });
-          setIsModalOpen(false);
-          setIsDeletingOrder(false);
-        },
-        onError: (err) => {
-          messageApi.open({
-            type: "error",
-            content: err.message || "An error occurred while deleting the purchase order.",
-          });
-        },
-      });
     };
 
     return (
@@ -244,10 +173,10 @@ type ImportDataType = Record<string, any>;
 
             <DataTableFilterBox
               filterKey="category"
-              title="Categories"
+              title="category"
               options={CATEGORY_OPTIONS}
-              filterValue={itemTypeFilter}
-              setFilterValue={setItemTypeFilter}
+              filterValue={categoryFilter}
+              setFilterValue={setCategoryFilter}
             />
 
             <DataTableResetFilter
@@ -277,10 +206,82 @@ type ImportDataType = Record<string, any>;
               { label: "Status", value: "status", required: true},
             ]}
             // onImport={() => {}}
-            onImport={(parsedData) => {
-              const formattedData = formatCsvRows(parsedData, formatInputData);
-              setImportData((prev) => [...prev, ...formattedData]);
-              console.log("parsed data::", parsedData);
+            onImport={
+              (parsedData: any[]) => {
+                const filteredData = parsedData.filter(row =>
+                  Object.values(row).some(value => value !== "" && value !== null)
+                );
+              
+                console.log("Filtered Data:", filteredData); // Debugging step
+    
+                let errorMessages: string[] = [];
+              
+                // Validate each row using Zod
+                const validatedData = filteredData.map((item, index) => {
+                  const result = orderSchema.safeParse({
+                    category: item.category || "",
+                    plannedUnit: item.plannedUnit || "",
+                    allocationDepartment: item.allocationDepartment || "",
+                    packSize: item.packSize || "",
+                    plannedOrderDate: item.plannedOrderDate || "",
+                    plannedDeliveryDate: item.plannedDeliveryDate || "",
+                    plannedQuantity: Number(item.plannedQuantity) || 0,
+                    revisedQuantity: item.revisedQuantity ? Number(item.revisedQuantity) : 0, // Convert empty to null
+                    secondReview: item.secondReview ? Number(item.secondReview) : 0,
+                    unitCost: String(item.unitCost) || "",
+                    totalCost: Number(item.totalCost) || 0,
+                    fundingSource: item.fundingSource || "",
+                    status: item.status || "PLANNED",
+                  });
+              
+                  if (!result.success) {
+                    const fieldErrors = Object.entries(result.error.format())
+                        .map(([field, error]) => `${field}: ${Array.isArray(error) ? error.join(", ") : error._errors.join(", ")}`)
+                        .join(" | ");
+                        errorMessages.push(`Row ${index + 1}: ${fieldErrors}`);
+                    return null; // Skip invalid rows
+                  }
+              
+                  return result.data;
+                }).filter(Boolean); // Remove null values
+              
+                console.log("Validated Data:", validatedData); // Debugging step
+              
+                if (validatedData.length === 0) {
+                  alert(`Import failed! The following errors were found:\n\n${errorMessages.join("\n")}`);
+                  return;
+                }
+    
+                setImportData((prev) => [...prev, ...validatedData as TInsertShipmentsSchema[]])
+    
+                const sendBatches = async (data: TInsertShipmentsSchema[]) => {
+                  for (let i = 0; i < data.length; i += BATCH_SIZE) {
+                    const batch = data.slice(i, i + BATCH_SIZE);
+                    try {
+                      await createShipments.mutateAsync(batch, {
+                        onSuccess: () => {
+                          setIsImporting(true)
+                          purchaseOrdersQuery.refetch();
+                          messageApi.open({
+                            type: "success",
+                            content: "Shipment added successfully",
+                          });
+                          setIsImporting(false)
+                        },
+                        onError: (err) => {
+                          messageApi.open({
+                            type: "error",
+                            content: err.message || "An error occurred while adding shipment item(s).",
+                          });
+                        },
+                      });
+                    } catch (error) {
+                      console.error("Error sending batch:", error);
+                    }
+                  }
+                };
+    
+                sendBatches(validatedData);
             }}
             className="self-end"
         />
@@ -290,64 +291,9 @@ type ImportDataType = Record<string, any>;
 
       <div className="bg-white rounded-[20px]">
         <div className="mt-10 z-10">
-          {/* <DataTable
-            columns={columns}
-            data={data || []}
-            totalItems={data.length}
-            rowClick={(id: string) => handleOrderClick(id)}
-            // searchBy="plannedUnit"
-            // searchByTitle="Medicine"
-            filterTitle="Status"
-            options={PURCHASE_ORDER_OPTIONS}
-
-            searchKey="plannedUnit"
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            setPage={setPage}
-          />  */}
           <DataTable columns={columns} data={filteredData} totalItems={filteredData.length} rowClick={(id: string) => handleOrderClick(id)} />
         </div>
       </div>
-        <Modal
-          closeIcon={null}
-          width={338}
-          centered
-          open={isModalOpen}
-          onCancel={() => setIsModalOpen(false)}
-          footer={() => (
-            <div className="flex justify-center">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-6 py-2 bg-white border border-[rgba(23,23,31,0.10)] shadow-[0px_1px_1px_0px_rgba(18,18,18,0.10),0px_0px_0px_1px_rgba(18,18,18,0.07),0px_1px_3px_0px_rgba(18,18,18,0.10)] border-solid rounded-[10px] border-[#17171f1a]"
-              >
-                No, Cancel
-              </button>
-              <button
-                onClick={handleDeletePurchaseOrder}
-                className="px-8 py-2 deleteBtn ml-4"
-                disabled={isDeletingOrder}
-              >
-                {isDeletingOrder ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  "Yes, Delete"
-                )}
-              </button>
-            </div>
-          )}
-        >
-          <div className="text-center">
-            <div className="flex justify-center mb-5">
-              <ModalTrashIcon />
-            </div>
-            <p className="text-[#121417] text-lg font-semibold mb-2">
-              Delete Purchase Order
-            </p>
-            <p className="text-sm text-[#64707D] mb-6">
-              Are you sure you want to delete this purchase order?
-            </p>
-          </div>
-        </Modal>
       </>
     );
   };

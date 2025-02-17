@@ -1,7 +1,13 @@
+"use client"
 import { Separator } from "@/components/ui/separator";
 import React from 'react';
-import { calculateDeliveryStatus } from '@/lib/utils';
+import { calculateDeliveryStatus, getShipmentStatus } from '@/lib/utils';
 import { purchaseOrderStatus } from '@/types';
+import { useGetPurchaseOrder } from "@/features/purchase-orders/api/use-get-order";
+import { useGetPurchaseOrderReviews } from "@/features/purchase-order-reviews/api/use-get-reviews";
+import { ShipmentStatusCell } from "@/app/(dashboard)/purchase-orders/[id]/page";
+import { useParams } from "next/navigation";
+
 
 
 export interface OrderDetailsProps {
@@ -26,10 +32,21 @@ export interface OrderDetailsProps {
   }
 
 export const OrderDetailsComponent: React.FC<OrderDetailsProps> = ({ data }) => {
+    const params = useParams();
+  
+  const {
+        data: shipmentItemData,
+      } = useGetPurchaseOrder(Number(params.id));
+      const {
+        data: poReviewData,
+      } = useGetPurchaseOrderReviews()
+  
+      const msg = shipmentItemData?.plannedDeliveryDate 
+      ? calculateDeliveryStatus(shipmentItemData.plannedDeliveryDate) 
+      : "Planned delivery date is not available.";
+  
+      const shipmentStatus = getShipmentStatus(shipmentItemData, poReviewData);
 
-    const msg = data?.plannedDeliveryDate 
-    ? calculateDeliveryStatus(data.plannedDeliveryDate)
-    : "Planned delivery date is not available.";
 
 
   return (
@@ -47,16 +64,7 @@ export const OrderDetailsComponent: React.FC<OrderDetailsProps> = ({ data }) => 
                 
                 <div>
                   <span className="text-[#98A2B3] font-semibold">Order status</span>
-                  {" "}
-                  {
-                    data?.status === "PLANNED" 
-                    ? ( <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{data?.status}</span>) 
-                    : ( 
-                        <span className="text-[#10A142] bg-[#EAFFF1] px-3 py-1.5 rounded-[10px] text-xs font-medium">
-                          {data?.status}
-                        </span>
-                    )
-                  }
+                  <ShipmentStatusCell status = {String(shipmentStatus)} />
                 </div>
 
                 <Separator orientation="vertical" />

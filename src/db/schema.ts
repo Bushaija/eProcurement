@@ -11,8 +11,6 @@ export const shipmentEnum = pgEnum("shipment_status", ['ORDERED', 'PLANNED', 'CA
 
 export const purchaseOrderTable = pgTable("purchase_order", {
   id: serial("id").primaryKey(),
-  // TODO: Remove itemType
-  // itemType: varchar("item_type", { length: 255 }),
   category: varchar("category", { length: 255 }).notNull(),
   plannedUnit: varchar("planned_unit", { length: 255 }).notNull(),
   allocationDepartment: varchar("allocation_department", { length: 255 }).notNull(),
@@ -41,10 +39,6 @@ export const purchaseOrderReviewTable = pgTable("purchase_order_review", {
   purchaseOrderIssueDate: date("purchase_order_issue_date"),
   readTime: date("read_time"),
   expectedDeliveryDate: date("expected_delivery_date"),
-  unitPriceDdp: doublePrecision("unit_price_ddp").default(0),
-  totalCostDdp: doublePrecision("total_cost_ddp").default(0),
-  unitPriceCip: doublePrecision("unit_price_cip").default(0),
-  totalCostCip: doublePrecision("total_cost_cip").default(0),
   currency: varchar("currency", { length: 100 }).default('USD'),
   orderQuantity: integer("order_quantity").default(0),
   receivedQuantity: integer("received_quantity", ).default(0),
@@ -80,7 +74,6 @@ export const purchaseOrderReviewRelations = relations(purchaseOrderReviewTable, 
 export const selectPurchaseOrdersSchema = createSelectSchema(purchaseOrderTable);
 
 export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, {
-  // itemType: schema => schema.itemType.min(1).max(500),
   category: schema => schema.category.min(1).max(500),
   plannedUnit: schema => schema.plannedUnit.min(1).max(500),
   allocationDepartment: schema => schema.allocationDepartment.min(1).max(500),
@@ -91,7 +84,6 @@ export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, 
   fundingSource: schema => schema.fundingSource.min(1).max(500),
 })
   .required({
-    // itemType: true,
     category: true,
     plannedUnit: true,
     allocationDepartment: true,
@@ -111,6 +103,12 @@ export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrderTable, 
 
 export const patchPurchaseOrderSchema = insertPurchaseOrderSchema.partial();
 
+export const insertShipmentsSchema = createInsertSchema(purchaseOrderReviewTable).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 
 // purchase order review validation types
 
@@ -124,12 +122,12 @@ export const insertPurchaseOrderReviewSchema = createInsertSchema(purchaseOrderR
 
 export const patchPurchaseOrderReviewSchema = insertPurchaseOrderReviewSchema.partial();
 
-
-
 // custom types
 export type TSelectPurchaseOrderSchema = zod.infer<typeof selectPurchaseOrdersSchema>;
 
 export type TSelectPurchaseOrderReviewSchema = zod.infer<typeof selectPurchaseOrderReviewSchema>
+
+export type TInsertShipmentsSchema = zod.infer<typeof insertShipmentsSchema>
 
 // export const selectPurchaseOrdersArraySchema = zod.array(selectPurchaseOrdersSchema);
 

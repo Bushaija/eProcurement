@@ -30,8 +30,8 @@ export function getColumns({ setRowAction, isModalOpen, selectedOrderID, setIsMo
     plannedUnit: {
       accessorKey: "plannedUnit",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Item Name" />,
-      cell: ({ row }) => <div className="w-20 font-medium text-center">
-        {(row.original.plannedUnit).split(" ").slice(0,2) + ".."} 
+      cell: ({ row }) => <div className="w-[200px] font-medium text-left">
+        {(row.original.plannedUnit).split(" ").slice(0,1) + ".."} 
       </div>,
       enableSorting: true,
       enableHiding: true,
@@ -253,15 +253,6 @@ return [
         </div>,
         enableSorting: true,
         enableHiding: true,
-    },
-    {
-    accessorKey: "itemType",
-    header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Item Type" />
-    ),
-    cell: ({ row }) => <div className="w-20 font-medium text-center">{row.original.itemType}</div>,
-    enableSorting: true,
-    enableHiding: true,
     },
     {
         accessorKey: "category",

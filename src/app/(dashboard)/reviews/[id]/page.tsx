@@ -20,10 +20,6 @@ import { useState } from "react";
     purchaseOrderIssueDate: string;
     readTime: string; // check here
     expectedDeliveryDate: string;
-    unitPriceDdp: number;
-    totalCostDdp: number;
-    unitPriceCip: number;
-    totalCostCip: number;
     currency: string;
     orderQuantity: number;
     receivedQuantity: number;
@@ -198,36 +194,7 @@ import { useState } from "react";
                   {data?.expectedDeliveryDate || "N/A"}
                 </p>
               </div>
-              <div className="flex flex-col text-sm w-[280px]">
-                <p className="font-semibold text-[#98A2B3]">Unit Price DDP: </p>
-                <p className="text-[#40474F] font-medium">
-                  {data?.unitPriceDdp || "N/A"}
-                </p>
-              </div>
             </div>
-
-            <div className="flex gap-8">
-              <div className="flex flex-col text-sm w-[280px]">
-                <p className="font-semibold text-[#98A2B3]">Total Cost DDP: </p>
-                <p className="text-[#40474F] font-medium">
-                  {data?.totalCostDdp || "N/A"}
-                </p>
-              </div>
-              <div className="flex flex-col text-sm w-[280px]">
-                <p className="font-semibold text-[#98A2B3]">Unit Price CIP: </p>
-                <p className="text-[#40474F] font-medium">
-                  {/* {data?.revisedQuantity !== null ? data?.revisedQuantity : 'N/A'} */}
-                  {data?.unitPriceCip || "N/A"}
-                </p>
-              </div>
-              <div className="flex flex-col text-sm w-[280px]">
-                <p className="font-semibold text-[#98A2B3]">Total Cost CIP: </p>
-                <p className="text-[#40474F] font-medium">
-                  {data?.totalCostCip || "N/A"}
-                </p>
-              </div>
-            </div>
-  
           <div className="flex flex-col gap-4">
              <div className="flex gap-8">
               <div className="flex flex-col text-sm w-[280px]">

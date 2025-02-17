@@ -15,17 +15,6 @@ export const itemsColumns: ColumnDef<TSelectPurchaseOrderSchema>[] = [
     }
   },
   {
-    accessorKey: "itemType",
-    header: () => <div className="w-[100px] text-xs font-semibold">
-      Item Type
-    </div>,
-    cell: ({ row }) => {
-      return <div className="text-[#40474F]">
-        {row.original.itemType}
-      </div>
-    }
-  },
-  {
     accessorKey: "category",
     header: () => <div className="w-[100px] text-xs font-semibold">
       Item Category
@@ -234,50 +223,6 @@ export const reviewColumns: ColumnDef<TSelectPurchaseOrderReviewSchema>[] = [
         return (
           <div className="text-[#40474F] min-w-[100px]">
             {row.original.expectedDeliveryDate}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "unitPriceDdp",
-      header: () => <div className="w-[100px] text-xs font-semibold">Unit Price DDP</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F] min-w-[100px]">
-            {row.original.unitPriceDdp}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "totalCostDdp",
-      header: () => <div className="w-[100px] text-xs font-semibold">Total Cost DDP</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F] min-w-[100px]">
-            {row.original.totalCostDdp}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "unitPriceCip",
-      header: () => <div className="w-[100px] text-xs font-semibold">Unit Price CIP</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F] min-w-[100px]">
-            {row.original.unitPriceCip}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "totalCostCip",
-      header: () => <div className="w-[100px] text-xs font-semibold">Total Cost CIP</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-[#40474F] min-w-[100px]">
-            {row.original.totalCostCip}
           </div>
         );
       },

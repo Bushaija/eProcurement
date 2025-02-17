@@ -143,50 +143,6 @@ interface DashboardProps {}
         },
       },
       {
-        accessorKey: "UNIT_PRICE_DDP",
-        header: () => <div className="w-[170px] text-xs font-bold">Unit Price DDP</div>,
-        cell: ({ row }) => {
-          return (
-            <div className="text-[#40474F] min-w-[100px]">
-              {row.original.unitPriceDdp}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "TOTAL_COST_DDP",
-        header: () => <div className="w-[170px] text-xs font-bold">Total Cost DDP</div>,
-        cell: ({ row }) => {
-          return (
-            <div className="text-[#40474F] min-w-[100px]">
-              {row.original.totalCostDdp}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "UNIT_PRICE_CIP",
-        header: () => <div className="w-[170px] text-xs font-bold">Unit Price CIP</div>,
-        cell: ({ row }) => {
-          return (
-            <div className="text-[#40474F] min-w-[100px]">
-              {row.original.unitPriceCip}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "TOTAL_COST_CIP",
-        header: () => <div className="w-[170px] text-xs font-bold">Total Cost CIP</div>,
-        cell: ({ row }) => {
-          return (
-            <div className="text-[#40474F] min-w-[100px]">
-              {row.original.totalCostCip}
-            </div>
-          );
-        },
-      },
-      {
         accessorKey: "CURRENCY",
         header: () => <div className="w-[170px] text-xs font-bold">Currency</div>,
         cell: ({ row }) => {
@@ -319,7 +275,7 @@ interface DashboardProps {}
         <div className="bg-white rounded-[20px]">
           <div className="mt-10 z-10">
             <DataTable
-              columns={reviewColumns}
+              columns={reviewColumns as ColumnDef<unknown, unknown>[]}
               data={data || []}
               rowClick={(id: string) => handleOrderClick(id)}
               searchBy="purchase number"

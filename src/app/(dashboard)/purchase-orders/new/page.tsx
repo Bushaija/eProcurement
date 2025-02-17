@@ -33,11 +33,6 @@ import { purchaseOrderStatus } from "@/types";
 interface CreatePurchaseOrderProps {}
 
 const FormSchema = z.object({
-    itemType: z.string({
-      required_error: "Item type is required",
-      invalid_type_error: "Item type must be a string"
-    }).min(2),
-
     category: z.string({
       required_error: "category is required",
       invalid_type_error: "category must be a string"
@@ -102,7 +97,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      itemType: "",
       category: "", 
       plannedUnit: "", 
       allocationDepartment: "",
@@ -124,7 +118,6 @@ const CreatePurchaseOrder: React.FunctionComponent<CreatePurchaseOrderProps> = (
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const newPurchaseOrder = {
-        itemType: data.itemType,
         category: data.category, 
         plannedUnit: data.plannedUnit,
         allocationDepartment: data.allocationDepartment,

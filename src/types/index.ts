@@ -36,7 +36,6 @@ export const MetricsSchema = z.array(
   z.object({
     itemId: z.number(),
     itemName: z.string(),
-    itemType: z.string(),
     category: z.string(),
     department: z.string(),
     shipmentStatus: z.string(),

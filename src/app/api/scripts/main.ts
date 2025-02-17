@@ -84,13 +84,6 @@ export function countTotalCost(
     return { total_cost: totalCost}
 };
 
-export function countTotalCostByShipmentStatus(
-    reviewList: TSelectPurchaseOrderReviewSchema[],
-): { total_cost_by_shipment_status: number } {
-    const totalCostByShipmentStatus = reviewList.reduce((acc, review) => acc + review.totalCostDdp, 0);
-    return { total_cost_by_shipment_status: totalCostByShipmentStatus}
-};
-
 export function countTotalCostByFundingSource(
     poList: TSelectPurchaseOrderSchema[],
 ): { total_cost_by_funding_source: number } {

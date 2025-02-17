@@ -23,11 +23,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
           <KBar>
-            <QueryProvider>
               <NuqsAdapter>
+              <QueryProvider>
                 {children}
-              </NuqsAdapter>
-            </QueryProvider>
+              </QueryProvider>
+            </NuqsAdapter>
           </KBar>
       </body>
     </html>

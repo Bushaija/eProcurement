@@ -240,13 +240,13 @@ export const getShipmentStatus = (
   poData: TSelectPurchaseOrderSchema | null,
   poReviewData: TSelectPurchaseOrderReviewSchema[] | null
 ): string | null => {
-  if (!poData || !poReviewData) return null;
+  if (!poData || !poReviewData) return "PLANNED";
 
   const matchingReview = poReviewData.find(
     (review) => review.purchaseOrderId === poData.id
   );
 
-  return matchingReview ? matchingReview.shipmentStatus : null;
+  return matchingReview ? matchingReview.shipmentStatus : "PLANNED";
 };
 
 export const calculateTotalCostByFundingSource = (items: TSelectPurchaseOrderSchema[], fundingSourceName: string): number => {

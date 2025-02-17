@@ -36,10 +36,6 @@ const FormSchema = z.object({
   expectedDeliveryDate: z.string({
     required_error: "expected delivery date is required"
   }),
-  unitPriceDdp: z.coerce.number(),
-  totalCostDdp: z.coerce.number(),
-  unitPriceCip: z.coerce.number(),
-  totalCostCip: z.coerce.number(),
   currency: z.string(),
   orderQuantity: z.coerce.number(),
   receivedQuantity: z.coerce.number(),
@@ -82,10 +78,6 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
         purchaseOrderIssueDate: data?.purchaseOrderIssueDate || "",
         readTime:data?.readTime || "",
         expectedDeliveryDate:data?.expectedDeliveryDate || "",
-        unitPriceDdp: data?.unitPriceDdp || 0,
-        totalCostDdp: data?.totalCostDdp || 0,
-        unitPriceCip: data?.unitPriceCip || 0,
-        totalCostCip: data?.totalCostCip || 0,
         currency:data?.currency || "",
         orderQuantity: data?.orderQuantity || 0,
         receivedQuantity:data?.receivedQuantity || 0,
@@ -103,10 +95,6 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
       purchaseOrderIssueDate: data.purchaseOrderIssueDate,
       readTime: data.readTime,
       expectedDeliveryDate: data.expectedDeliveryDate,
-      unitPriceDdp: data.unitPriceDdp,
-      totalCostDdp: data.totalCostDdp,
-      unitPriceCip: data.unitPriceCip,
-      totalCostCip: data.totalCostCip,
       currency: data.currency,
       orderQuantity: Number(data.orderQuantity),
       receivedDate: data.receivedDate,
@@ -267,6 +255,7 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
             />
           </div>
 
+          </div>
           <div className="flex gap-5 mt-6 max-sm:flex-wrap">
             <FormField
               control={form.control}
@@ -294,117 +283,8 @@ const EditOrder: React.FunctionComponent<EditPurchaseOrderProps> = () => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="unitPriceDdp"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Unit price DDP</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      value={field.value || selectedOrder?.unitPriceDdp || ""}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        form.setValue("unitPriceDdp", value);
-                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                          ...prev,
-                          unitPriceDdp: value,
-                        }));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-
-            <FormField
-              control={form.control}
-              name="totalCostDdp"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Total cost DDP</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Enter planned quantity"
-                      {...field}
-                      value={field.value || selectedOrder?.totalCostDdp || ""}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value); // Parse as a number
-                        form.setValue("totalCostDdp", value); // Set the value as a number
-                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                          ...prev,
-                          totalCostDdp: value,
-                        }));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="unitPriceCip"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Unit price CIP</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Enter revised quantity"
-                      {...field}
-                      value={field.value || selectedOrder?.unitPriceCip || ""}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        form.setValue("unitPriceCip", value);
-                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                          ...prev,
-                          unitPriceCip: value,
-                        }));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="flex gap-5 mt-6 max-sm:flex-wrap">
             
-
-            <FormField
-              control={form.control}
-              name="totalCostCip"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Total cost CIP</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Enter Total cost CIP"
-                      {...field}
-                      value={field.value || selectedOrder?.totalCostCip || ""}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        form.setValue("totalCostCip", value);
-                        setSelectedOrder((prev: PurchaseOrderDetails) => ({
-                          ...prev,
-                          totalCostCip: value,
-                        }));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="flex gap-5 mt-6 max-sm:flex-wrap">
 
             <FormField
               control={form.control}

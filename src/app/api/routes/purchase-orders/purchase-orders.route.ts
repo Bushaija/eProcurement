@@ -119,17 +119,14 @@ export const remove = createRoute({
     },
 });
 
-/*
-request: {
-        body: jsonContentRequired(
-            insertPurchaseOrderSchema,
-            "The purchase order to create",
-        ),
-    },
-*/
+
+
+
+
+
 
 export const uploadCSV = createRoute({
-    path: "/orders/upload",
+    path: "/orders/bulk-create",
     method: "post",
     tags,
     request: {

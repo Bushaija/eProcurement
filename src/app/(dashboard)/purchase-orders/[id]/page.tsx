@@ -32,7 +32,7 @@ const CardCell = ({ title, value, isMainTitle = false }: CardCellProps) => {
   </div>
 }
 
-const ShipmentStatusCell: React.FC<{ status: string }> = ({ status }) => {
+export const ShipmentStatusCell: React.FC<{ status: string }> = ({ status }) => {
   if(status === "PLANNED") {
     return <span className="text-[#F29425] bg-[#FFF9F0] px-3 py-1.5 rounded-[10px] text-xs font-medium">{status}</span>
   }
@@ -98,7 +98,7 @@ const OrderDetails: React.FunctionComponent<OrderDetailsProps> = () => {
     ? calculateDeliveryStatus(shipmentItemData.plannedDeliveryDate) 
     : "Planned delivery date is not available.";
 
-    const shipmentStatus = getShipmentStatus(shipmentItemData ?? null, poReviewData ?? null);
+    const shipmentStatus = getShipmentStatus(shipmentItemData, poReviewData);
 
     if (isLoading || isPoReviewDataLoading) {
       return (

@@ -100,6 +100,7 @@ export function CsvImporter({
     onFieldsReset,
     getSanitizedData,
   } = useParseCsv({ fields })
+  const [loading, setLoading] = React.useState(false);
   // const { onUpload, isUploading } = useUploadFile("csvUploader")
   const { onUpload, isUploading } = useUploadFile()
 
@@ -210,15 +211,19 @@ export function CsvImporter({
             <Button variant="outline" onClick={() => setStep("upload")}>
               Back
             </Button>
+
             <Button
               onClick={async () => {
+                setLoading(true);
                 await new Promise((resolve) => setTimeout(resolve, 100))
                 onImport(getSanitizedData({ data }))
+                setLoading(false);
                 setOpen(false)
                 setStep("upload")
               }}
+              disabled={loading}
             >
-              Import
+              {loading ? "Importing..." : "Import"}
             </Button>
           </DialogFooter>
         </DialogContent>
