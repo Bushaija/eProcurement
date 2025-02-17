@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Overview from './_components/overview';
 
 export const metadata = {
@@ -6,9 +7,9 @@ export const metadata = {
 
 export default function IndexPage() {
 
-  return <>
+  return <Suspense>
     <Overview />
-  </>
+  </Suspense>
 };
 
 
