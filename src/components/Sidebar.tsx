@@ -23,7 +23,7 @@ const routes = [
     icon: <PurchaseOrderIcon />
   },
   {
-    href: "/#analytics",
+    href: "/analytics",
     label: "Analytics",
     disabled: false,
     icon: <AnalyticsIcon />

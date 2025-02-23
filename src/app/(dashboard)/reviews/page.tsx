@@ -278,7 +278,7 @@ interface DashboardProps {}
               columns={reviewColumns as ColumnDef<unknown, unknown>[]}
               data={data || []}
               rowClick={(id: string) => handleOrderClick(id)}
-              searchBy="purchase number"
+              searchBy="purchaseOrderNumber"
             />
           </div>
         </div>

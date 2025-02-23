@@ -80,7 +80,7 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
 
     // console.log("funding source: ", calculateTotalCostByFundingSource(shipmentData || [], "tbd"))
 
-    if (shipmentIsPending || poReviewIsPending) {
+    if (shipmentIsPending || poReviewIsPending || isLoading) {
       return (
         <Layout>
           <Skeleton
@@ -304,24 +304,6 @@ const Dashboard: React.FunctionComponent<DashboardProps> = () => {
           name="Budget gap"
           isUSD
         />
-
-        {/* <StatisticsCard
-            icon={<ApprovedOrderIcon />}
-            value={String(poReviewData
-              ? poReviewData.filter(
-                  (order: TSelectPurchaseOrderReviewSchema) =>
-                    order.shipmentStatus?.toLowerCase().trim() === "received"
-                ).length
-              : 0)}
-            name={`Received shipment${
-              poReviewData && poReviewData.filter(
-                (order: TSelectPurchaseOrderReviewSchema) =>
-                  order.shipmentStatus?.toLowerCase().trim() === "received"
-              ).length > 1
-                ? "s"
-                : ""
-            }`}
-        /> */}
 
       </div>
 
