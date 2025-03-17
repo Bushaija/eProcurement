@@ -2,11 +2,52 @@ import { parse } from "csv-parse/sync"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { TSelectPurchaseOrderReviewSchema, TSelectPurchaseOrderSchema } from "@/db/schema"
-import { Item } from "@radix-ui/react-select"
+
+
+// export function cn(...inputs: ClassValue[]) {
+//   return twMerge(clsx(inputs))
+// }
+
+
+export function cx(...args: ClassValue[]) {
+  return twMerge(clsx(...args))
+}
+
+// Tremor Raw focusInput [v0.0.1]
+
+export const focusInput = [
+  // base
+  "focus:ring-2",
+  // ring color
+  "focus:ring-blue-200 focus:dark:ring-blue-700/30",
+  // border color
+  "focus:border-blue-500 focus:dark:border-blue-700",
+]
+
+// Tremor Raw focusRing [v0.0.1]
+
+export const focusRing = [
+  // base
+  "outline outline-offset-2 outline-0 focus-visible:outline-2",
+  // outline color
+  "outline-blue-500 dark:outline-blue-500",
+]
+
+// Tremor Raw hasErrorInput [v0.0.1]
+
+export const hasErrorInput = [
+  // base
+  "ring-2",
+  // border color
+  "border-red-500 dark:border-red-700",
+  // ring color
+  "ring-red-200 dark:ring-red-700/30",
+]
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
 
 export function formatBytes(
   bytes: number,
@@ -166,23 +207,23 @@ export function formatCsvRows(csvData: any, formatFn: (data: InputData) => Recor
 }
 
 
-export function aggregateByKey<T>(
-  data: T[],
-  key: keyof T,
-  valueKey: keyof T
-): T[] {
-  return Object.values(
-    data.reduce((acc, item) => {
-      const groupKey = item[key] as string; // Convert key value to string
-      const value = Number(item[valueKey]); // Convert value to number
+// export function aggregateByKey<T>(
+//   data: T[],
+//   key: keyof T,
+//   valueKey: keyof T
+// ): T[] {
+//   return Object.values(
+//     data.reduce((acc, item) => {
+//       const groupKey = item[key] as string; // Convert key value to string
+//       const value = Number(item[valueKey]); // Convert value to number
 
-      acc[groupKey] = acc[groupKey] || { ...item, [valueKey]: 0 };
-      acc[groupKey][valueKey] = ((acc[groupKey][valueKey] as unknown) as number) + value;
+//       acc[groupKey] = acc[groupKey] || { ...item, [valueKey]: 0 };
+//       acc[groupKey][valueKey] = ((acc[groupKey][valueKey] as unknown) as number) + value;
       
-      return acc;
-    }, {} as Record<string, T>)
-  );
-}
+//       return acc;
+//     }, {} as Record<string, T>)
+//   );
+// }
 
 
 export function transformAggregatedData<T extends Record<string, any>>(
@@ -268,16 +309,16 @@ export const calculateTotalIncurredCost = (items: any[]): number => {
   }, 0);
 };
 
-export function transformDivisionCostData(data: any[]) {
-  return Object.entries(
-      data.reduce((acc, { division, totalCost }) => {
-          acc[division] = (acc[division] || 0) + totalCost;
-          return acc;
-      }, {})
-  )
-  .map(([division, totalCost]) => ({ division, totalCost }))
-  .sort((a, b) => b.totalCost - a.totalCost);
-}
+// export function transformDivisionCostData(data: any[]) {
+//   return Object.entries(
+//       data.reduce((acc, { division, totalCost }) => {
+//           acc[division] = (acc[division] || 0) + totalCost;
+//           return acc;
+//       }, {})
+//   )
+//   .map(([division, totalCost]) => ({ division, totalCost }))
+//   .sort((a, b) => b.totalCost - a.totalCost);
+// }
 
 export function getTotalReceivedShipments(data: any[]): number {
   return data.reduce((total, shipment) => {

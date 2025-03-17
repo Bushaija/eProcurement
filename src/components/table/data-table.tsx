@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react"
+import { useEffect, useState, useCallback, useRef } from "react";
 
 import {
   ColumnDef,
@@ -28,9 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Options } from 'nuqs';
+import { parseAsInteger, useQueryState } from 'nuqs';
 
-import { useState } from "react";
 import { Button } from "../ui/button";
 import { ScrollBar } from "../ui/scroll-area";
 import { Badge } from "@/components/ui/badge"
@@ -53,7 +53,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, PlusCircleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { parseAsInteger, useQueryState } from 'nuqs';
 import {
   Select,
   SelectContent,
@@ -84,16 +83,17 @@ interface DataTableProps<TData, TValue> {
   filterTitle?: string;
   options?: FilterOptions[];
   filterValue?: string;
+  onFilterChange?: (values: string[]) => void;
 
   searchKey: string;
   searchQuery: string;
   setSearchQuery: (
     value: string | ((old: string) => string | null) | null,
-    options?: Options<any> | undefined
+    options?: Record<string, any>
   ) => Promise<URLSearchParams>;
   setPage: <Shallow>(
     value: number | ((old: number) => number | null) | null,
-    options?: Options<Shallow> | undefined
+    options?: Record<string, any>
   ) => Promise<URLSearchParams>;
 }
 
@@ -116,6 +116,7 @@ export function DataTable<TData, TValue>({
   // searchByTitle,
   options,
   filterValue,
+  onFilterChange,
 
   searchKey,
   searchQuery,
@@ -128,11 +129,21 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [searchInputValue, setSearchInputValue] = useState(searchQuery || '');
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Initialize selectedValuesSet from filterValue
+  const [selectedValuesSet, setSelectedValuesSet] = React.useState<Set<string>>(() => {
+    if (!filterValue) return new Set();
+    return new Set(filterValue.split('.').filter(v => v !== ''));
+  });
 
-  const [selectedValuesSet, setSelectedValuesSet] = React.useState<Set<string>>(
-    new Set(filterValue ? filterValue.split('.') : [])
-  );
+  // Update selectedValuesSet when filterValue changes
+  useEffect(() => {
+    if (filterValue === undefined) return;
+    setSelectedValuesSet(new Set(filterValue.split('.').filter(v => v !== '')));
+  }, [filterValue]);
 
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
@@ -172,6 +183,53 @@ export function DataTable<TData, TValue>({
     setPage(1); // Reset page to 1 when search changes
   };
 
+  // Add keyboard shortcut to focus search input (Ctrl+K or Command+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  // Update searchInputValue when searchQuery changes (e.g., from URL)
+  useEffect(() => {
+    setSearchInputValue(searchQuery || '');
+  }, [searchQuery]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Debounced search handler
+  const debouncedSearch = useCallback((value: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      handleSearch(value);
+    }, 300); // 300ms debounce delay
+  }, [handleSearch]);
+
+  // Handle input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInputValue(value);
+    debouncedSearch(value);
+  };
+
   const table = useReactTable({
     data,
     columns,
@@ -206,6 +264,13 @@ export function DataTable<TData, TValue>({
       } else {
         updatedValues.add(value);
       }
+
+      // Call onFilterChange if provided
+      if (onFilterChange) {
+        const valuesArray = Array.from(updatedValues);
+        onFilterChange(valuesArray);
+      }
+
       return updatedValues;
     });
 
@@ -216,8 +281,14 @@ export function DataTable<TData, TValue>({
   };
 
   const resetFilter = () => {
+    setSelectedValuesSet(new Set());
     table.setColumnFilters([]);
     setColumnFilters([]);
+    
+    // Call onFilterChange with empty array if provided
+    if (onFilterChange) {
+      onFilterChange([]);
+    }
   };
   
 
@@ -227,78 +298,108 @@ export function DataTable<TData, TValue>({
     <Card className="outline-none border-none">
       <div className="rounded-md p-4 bg-white flex flex-col gap-4">
         <section className="flex gap-8 px-4">
-        <Input
-          placeholder={`Search ${searchKey}...`}
-          value={searchQuery ?? ''}
-          onChange={(e) => handleSearch(e.target.value)}
-          className={cn('w-full md:max-w-sm', isLoading && 'animate-pulse')}
-        />
-       { 
-        filterTitle &&
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="border-dashed">
-              <PlusCircleIcon className="mr-2 h-4 w-4" />
-                <p className="text-sm font-normal">{filterTitle}</p>
-              <>
-              {
-                Array.from(selectedValuesSet).map((value) => (
-                  <Badge
-                    variant={"secondary"}
-                    key={value}
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {options?.find((option) => option.value === value)?.label || value}
-                  </Badge>
-                ))
-              }
-              </>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Command>
-              <CommandInput placeholder={filterTitle} />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {
-                    options?.map((option) => (
-                      <CommandItem 
-                        key={option.value}
-                        onSelect={() => handleFilterSelect(option.value)}
+          <div className="relative w-full md:max-w-sm">
+            <Input
+              ref={searchInputRef}
+              placeholder={`Search by ${searchKey} or any field... (Ctrl+K)`}
+              value={searchInputValue}
+              onChange={handleInputChange}
+              className={cn('w-full pr-10', isLoading && 'animate-pulse')}
+            />
+            {isLoading ? (
+              <div className="absolute right-0 top-0 h-full px-3 flex items-center">
+                <svg className="animate-spin h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+            ) : searchInputValue && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3"
+                onClick={() => {
+                  setSearchInputValue('');
+                  handleSearch('');
+                }}
+                aria-label="Clear search"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x">
+                  <path d="M18 6 6 18"></path>
+                  <path d="m6 6 12 12"></path>
+                </svg>
+              </Button>
+            )}
+          </div>
+          { 
+            filterTitle &&
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="border-dashed flex items-center gap-2">
+                  <PlusCircleIcon className="h-4 w-4" />
+                  <span className="text-sm font-normal">{filterTitle}</span>
+                  {Array.from(selectedValuesSet).length > 0 && (
+                    <span className="ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      {Array.from(selectedValuesSet).length}
+                    </span>
+                  )}
+                  <div className="flex flex-wrap gap-1 ml-2">
+                    {Array.from(selectedValuesSet).map((value) => (
+                      <Badge
+                        variant="secondary"
+                        key={value}
+                        className="rounded-sm px-1 font-normal"
                       >
-                        <div
-                          className={cn(
-                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                            selectedValuesSet.has(option.value)
-                              ? 'bg-primary text-primary-foreground'
-                              : 'opacity-50 [&_svg]:invisible'
-                          )}
-                        >
-                          <CheckIcon className="h-4 w-4" aria-hidden="true" />
-                        </div>
-                        {option.label}
-                      </CommandItem>
+                        {options?.find((option) => option.value === value)?.label || value}
+                      </Badge>
                     ))}
-                </CommandGroup>
-                {selectedValuesSet.size > 0 && (
-                  <>
-                    <CommandSeparator />
+                  </div>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Command>
+                  <CommandInput placeholder={filterTitle} />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup>
-                      <CommandItem
-                        onSelect={resetFilter}
-                        className="justify-center text-center"
-                      >
-                        Clear filters
-                      </CommandItem>
+                      {
+                        options?.map((option) => (
+                          <CommandItem 
+                            key={option.value}
+                            onSelect={() => handleFilterSelect(option.value)}
+                          >
+                            <div
+                              className={cn(
+                                'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                                selectedValuesSet.has(option.value)
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'opacity-50 [&_svg]:invisible'
+                              )}
+                            >
+                              <CheckIcon className="h-4 w-4" aria-hidden="true" />
+                            </div>
+                            {option.label}
+                          </CommandItem>
+                        ))}
                     </CommandGroup>
-                  </>
-                )}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-        }
+                    {selectedValuesSet.size > 0 && (
+                      <>
+                        <CommandSeparator />
+                        <CommandGroup>
+                          <CommandItem
+                            onSelect={resetFilter}
+                            className="justify-center text-center"
+                          >
+                            Clear filters
+                          </CommandItem>
+                        </CommandGroup>
+                      </>
+                    )}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          }
         </section>
         <div className="rounded-md px-4 bg-white">
       <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)] ">
@@ -352,7 +453,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  <span className="text-muted-foreground text-sm">No data available</span>
                 </TableCell>
               </TableRow>
             )}

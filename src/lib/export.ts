@@ -40,7 +40,7 @@ export function exportTableToCSV<TData>(
     headers.join(","),
     ...(onlySelected
       ? table.getFilteredSelectedRowModel().rows
-      : table.getRowModel().rows
+      : table.getFilteredRowModel().rows
     ).map((row) =>
       headers
         .map((header) => {

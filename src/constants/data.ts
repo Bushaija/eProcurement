@@ -4,6 +4,7 @@ import { z } from "zod";
 export const BATCH_SIZE = 100;
 
 export const DIVISION_OPTIONS = [
+  { value: "CP", label: "CP"},
   { value: "BTD", label: "BTD"},
   { value: "CS", label: "CS"},
   { value: "HIV_AIDS_STIs", label: "HIV/AIDS & STIs"},

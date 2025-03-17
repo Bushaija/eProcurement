@@ -29,6 +29,12 @@ const routes = [
     icon: <AnalyticsIcon />
   },
   // {
+  //   href: "/stats",
+  //   label: "Statistics",
+  //   disabled: false,
+  //   icon: <AnalyticsIcon />
+  // },
+  // {
   //   href: "/invoice",
   //   label: "Invoice",
   //   disabled: false,

@@ -53,20 +53,31 @@ export const patch: AppRouteHandler<PatchRoute> = async (c)=> {
     const { id } = c.req.valid("param");
     const updates = c.req.valid("json");
 
-    console.log("updates", updates);
+    console.log("API received update request for ID:", id);
+    console.log("Update payload:", JSON.stringify(updates, null, 2));
 
-    const [review] = await db.update(purchaseOrderReviewTable)
-        .set(updates)
-        .where(eq(purchaseOrderReviewTable.id, id))
-        .returning();
+    try {
+        const [review] = await db.update(purchaseOrderReviewTable)
+            .set(updates)
+            .where(eq(purchaseOrderReviewTable.id, id))
+            .returning();
 
-    if(!review) {
+        if(!review) {
+            console.log("No review found with ID:", id);
+            return c.json({
+                message: HTTPStatusPhrases.NOT_FOUND,
+            }, 404);
+        }
+
+        console.log("Update successful, returning:", JSON.stringify(review, null, 2));
+        return c.json(review, 200);
+    } catch (error) {
+        console.error("Error updating review:", error);
         return c.json({
-            message: HTTPStatusPhrases.NOT_FOUND,
-        }, 404);
+            message: "Error updating review",
+            error: error instanceof Error ? error.message : String(error)
+        }, 500);
     }
-
-    return c.json(review, 200);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c)=> {
