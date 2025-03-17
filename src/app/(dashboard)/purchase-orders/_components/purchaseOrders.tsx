@@ -20,11 +20,9 @@ import { DataTableResetFilter } from "@/components/table/data-table-reset-filter
 import { DataTableExport } from "@/components/table/data-table-export";
 import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel} from "@tanstack/react-table";
 import { useBulkCreateShipments } from "@/features/purchase-orders/api/use-bulk-create-orders";
-import { TInsertShipmentsSchema } from "@/db/schema"
 import { BATCH_SIZE, CATEGORY_OPTIONS, DIVISION_OPTIONS, orderSchema } from '@/constants/data';
 import { CsvImporter } from './csv-importer';
 
-type ImportDataType = Record<string, any>;
 
 
   interface DashboardProps {}
@@ -32,9 +30,16 @@ type ImportDataType = Record<string, any>;
   const PurchaseOrdersPage: React.FunctionComponent<DashboardProps> = () => {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [importData, setImportData] = React.useState<TInsertShipmentsSchema[]>([]);
+    const [importData, setImportData] = React.useState<any[]>([]);
     const [selectedOrderID, setSelectedOrderID] = useState<number>();
     const [rowAction, setRowAction] = useState<DataTableRowAction<PurchaseOrder> | null>(null);
+    
+    // Use useEffect for browser-specific code to avoid hydration mismatches
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
+      setMounted(true);
+    }, []);
+    
     const columns = React.useMemo(() => getColumns({ 
       setRowAction,
       isModalOpen,
@@ -58,11 +63,15 @@ type ImportDataType = Record<string, any>;
     const isPending = purchaseOrdersQuery.isPending || purchaseOrdersQuery.isLoading;
     const error = purchaseOrdersQuery.error;
 
+    // Handle API error with useEffect to avoid calling message in render
     React.useEffect(() => {
-      if (data.length > 0) {
-        setImportData(data);
+      if (error && mounted) {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
       }
-    }, [data]);
+    }, [error, messageApi, mounted]);
 
     const {
       plannedUnitSearch,
@@ -82,11 +91,17 @@ type ImportDataType = Record<string, any>;
         .toLowerCase()
         .includes(plannedUnitSearch.toLowerCase());
       
-      const matchesDepartment = allocationDepartmentFilter
-        ? purchaseOrder.allocationDepartment === allocationDepartmentFilter
-        : true;
+      // Handle multiple selections for allocationDepartment
+      const departmentValues = allocationDepartmentFilter ? allocationDepartmentFilter.split('.') : [];
+      const matchesDepartment = departmentValues.length === 0 || 
+        departmentValues.includes(purchaseOrder.allocationDepartment);
   
-      return matchesSearch && matchesDepartment;
+      // Handle multiple selections for category
+      const categoryValues = categoryFilter ? categoryFilter.split('.') : [];
+      const matchesCategory = categoryValues.length === 0 || 
+        categoryValues.includes(purchaseOrder.category);
+  
+      return matchesSearch && matchesDepartment && matchesCategory;
     });
 
     const table = useReactTable({
@@ -100,25 +115,6 @@ type ImportDataType = Record<string, any>;
   
     
   
-    if (isPending || isImporting) {
-      return (
-        <>
-          <Skeleton
-            className="py-5 px-5 max-sm:px-0"
-            active
-            paragraph={{ rows: 6 }}
-          />
-        </>
-      );
-    }
-
-    if (error) {
-      messageApi.open({
-        type: "error",
-        content: "Error fetching data",
-      });
-    }
-    
     const handleClick = async () => {
       setIsLoading(true);
       await router.push("/purchase-orders/new");
@@ -130,7 +126,28 @@ type ImportDataType = Record<string, any>;
       router.push(`/purchase-orders/${id}`);
     };
 
-    return (
+    // Render loading state for server-side rendering
+    const renderLoadingState = () => (
+      <div className="py-5 px-5 max-sm:px-0">
+        <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-4"></div>
+        <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
+        <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse mb-2"></div>
+        <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse mb-2"></div>
+        <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    );
+
+    // Render skeleton loading state
+    const renderSkeletonLoading = () => (
+      <Skeleton
+        className="py-5 px-5 max-sm:px-0"
+        active
+        paragraph={{ rows: 6 }}
+      />
+    );
+
+    // Render main content
+    const renderMainContent = () => (
       <>
         {contextHolder}
         <div className="flex justify-between items-center mt-2">
@@ -183,120 +200,337 @@ type ImportDataType = Record<string, any>;
               isFilterActive={isAnyFilterActive}
               onReset={resetFilters}
             />
-        </div>
-        <div className="flex items-center gap-4">
-          <DataTableExport 
-            table={table}
-          />
+          </div>
+          <div className="flex items-center gap-4">
+            <DataTableExport 
+              table={table}
+            />
 
-          <CsvImporter
-            fields={[
-              { label: "Category", value: "category", required: true},
-              { label: "Medicine", value: "plannedUnit", required: true},
-              { label: "Department", value: "allocationDepartment", required: true},
-              { label: "Pack size", value: "packSize", required: true},
-              { label: "Planned Order Date", value: "plannedOrderDate", required: true},
-              { label: "Planned Delivery Date", value: "plannedDeliveryDate", required: true},
-              { label: "Planned Quantity", value: "plannedQuantity", required: true},
-              { label: "Revised Quantity", value: "revisedQuantity", required: true},
-              { label: "Second Review", value: "secondReview", required: true},
-              { label: "Unit Cost", value: "unitCost", required: true},
-              { label: "Total Cost", value: "totalCost", required: true},
-              { label: "Funding Source", value: "fundingSource", required: true},
-              { label: "Status", value: "status", required: true},
-            ]}
-            // onImport={() => {}}
-            onImport={
-              (parsedData: any[]) => {
-                const filteredData = parsedData.filter(row =>
-                  Object.values(row).some(value => value !== "" && value !== null)
-                );
-              
-                console.log("Filtered Data:", filteredData); // Debugging step
+            <CsvImporter
+              fields={[
+                { label: "Category", value: "category", required: true},
+                { label: "Medicine", value: "plannedUnit", required: true},
+                { label: "Department", value: "allocationDepartment", required: true},
+                { label: "Pack size", value: "packSize", required: true},
+                { label: "Planned Order Date", value: "plannedOrderDate", required: true},
+                { label: "Planned Delivery Date", value: "plannedDeliveryDate", required: true},
+                { label: "Planned Quantity", value: "plannedQuantity", required: true},
+                { label: "Revised Quantity", value: "revisedQuantity", required: true},
+                { label: "Second Review", value: "secondReview", required: true},
+                { label: "Unit Cost", value: "unitCost", required: true},
+                { label: "Total Cost", value: "totalCost", required: true},
+                { label: "Funding Source", value: "fundingSource", required: true},
+                { label: "Status", value: "status", required: true},
+              ]}
+              onImport={onCsvImport}
+              className="self-end"
+            />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[20px]">
+          <div className="mt-10 z-10">
+            <DataTable columns={columns} data={filteredData} totalItems={filteredData.length} rowClick={(id: string) => handleOrderClick(id)} />
+          </div>
+        </div>
+      </>
+    );
+
+    // Define the CSV import handler outside of the render function
+    const onCsvImport = (parsedData: any[]) => {
+      const filteredData = parsedData.filter(row =>
+        Object.values(row).some(value => value !== "" && value !== null)
+      );
     
-                let errorMessages: string[] = [];
-              
-                // Validate each row using Zod
-                const validatedData = filteredData.map((item, index) => {
-                  const result = orderSchema.safeParse({
-                    category: item.category || "",
-                    plannedUnit: item.plannedUnit || "",
-                    allocationDepartment: item.allocationDepartment || "",
-                    packSize: item.packSize || "",
-                    plannedOrderDate: item.plannedOrderDate || "",
-                    plannedDeliveryDate: item.plannedDeliveryDate || "",
-                    plannedQuantity: Number(item.plannedQuantity) || 0,
-                    revisedQuantity: item.revisedQuantity ? Number(item.revisedQuantity) : 0, // Convert empty to null
-                    secondReview: item.secondReview ? Number(item.secondReview) : 0,
-                    unitCost: String(item.unitCost) || "",
-                    totalCost: Number(item.totalCost) || 0,
-                    fundingSource: item.fundingSource || "",
-                    status: item.status || "PLANNED",
+      console.log("Filtered Data:", filteredData); // Debugging step
+
+      let errorMessages: string[] = [];
+      
+      // Pre-validate data to catch common format issues
+      const preValidateData = (data: any[]) => {
+        let hasWarnings = false;
+        let warnings: Array<{type: string, content: string, duration: number}> = [];
+        
+        // Check for missing required columns
+        const requiredColumns = ["category", "plannedUnit", "allocationDepartment", "packSize", 
+                                "plannedOrderDate", "plannedDeliveryDate", "plannedQuantity", 
+                                "unitCost", "totalCost", "fundingSource"];
+        
+        const missingColumns = requiredColumns.filter(col => 
+          !data.some(row => row[col] !== undefined && row[col] !== null && row[col] !== "")
+        );
+        
+        if (missingColumns.length > 0) {
+          warnings.push({
+            type: "warning",
+            content: `Missing required columns: ${missingColumns.join(", ")}`,
+            duration: 8
+          });
+          hasWarnings = true;
+        }
+        
+        // Check for numeric fields with non-numeric values
+        const numericFields = ["plannedQuantity", "revisedQuantity", "secondReview", "totalCost"];
+        const numericErrors: Record<string, number> = {};
+        
+        data.forEach((row, index) => {
+          numericFields.forEach(field => {
+            if (row[field] !== undefined && row[field] !== null && row[field] !== "" && 
+                isNaN(Number(row[field]))) {
+              numericErrors[field] = (numericErrors[field] || 0) + 1;
+            }
+          });
+        });
+        
+        if (Object.keys(numericErrors).length > 0) {
+          Object.entries(numericErrors).forEach(([field, count]) => {
+            warnings.push({
+              type: "warning",
+              content: `${count} non-numeric values found in ${field} column`,
+              duration: 6
+            });
+          });
+          hasWarnings = true;
+        }
+        
+        // Check for date fields with invalid formats
+        const dateFields = ["plannedOrderDate", "plannedDeliveryDate"];
+        const dateErrors: Record<string, number> = {};
+        
+        data.forEach((row, index) => {
+          dateFields.forEach(field => {
+            if (row[field] !== undefined && row[field] !== null && row[field] !== "") {
+              const date = new Date(row[field]);
+              if (isNaN(date.getTime())) {
+                dateErrors[field] = (dateErrors[field] || 0) + 1;
+              }
+            }
+          });
+        });
+        
+        if (Object.keys(dateErrors).length > 0) {
+          Object.entries(dateErrors).forEach(([field, count]) => {
+            warnings.push({
+              type: "warning",
+              content: `${count} invalid date formats found in ${field} column`,
+              duration: 6
+            });
+          });
+          hasWarnings = true;
+        }
+        
+        // Display warnings with setTimeout to avoid calling in render
+        warnings.forEach((warning, index) => {
+          setTimeout(() => {
+            messageApi.open({
+              type: warning.type as any,
+              content: warning.content,
+              duration: warning.duration
+            });
+          }, index * 300); // Stagger warnings
+        });
+        
+        return hasWarnings;
+      };
+      
+      // Run pre-validation
+      const hasPreValidationWarnings = preValidateData(filteredData);
+      if (hasPreValidationWarnings) {
+        setTimeout(() => {
+          messageApi.open({
+            type: "info",
+            content: "Attempting to process data despite warnings...",
+            duration: 3,
+          });
+        }, 0);
+      }
+    
+      // Validate each row using Zod
+      const validatedData = filteredData.map((item, index) => {
+        // Ensure dates are in the correct format (YYYY-MM-DD)
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return "";
+          try {
+            // Handle different date formats
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return "";
+            return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+          } catch (e) {
+            return "";
+          }
+        };
+
+        // Ensure numeric values are properly formatted
+        const formatNumber = (value: any): number => {
+          if (value === undefined || value === null || value === "") return 0;
+          // Remove any non-numeric characters except decimal point
+          const cleanedValue = String(value).replace(/[^0-9.]/g, '');
+          const num = Number(cleanedValue);
+          return isNaN(num) ? 0 : num;
+        };
+
+        try {
+          const result = orderSchema.safeParse({
+            category: (item.category || "").trim(),
+            plannedUnit: (item.plannedUnit || "").trim(),
+            allocationDepartment: (item.allocationDepartment || "").trim(),
+            packSize: (item.packSize || "").trim(),
+            plannedOrderDate: formatDate(item.plannedOrderDate),
+            plannedDeliveryDate: formatDate(item.plannedDeliveryDate),
+            plannedQuantity: formatNumber(item.plannedQuantity),
+            revisedQuantity: formatNumber(item.revisedQuantity),
+            secondReview: formatNumber(item.secondReview),
+            unitCost: String(item.unitCost || "").trim(),
+            totalCost: formatNumber(item.totalCost),
+            fundingSource: (item.fundingSource || "").trim(),
+            status: (item.status || "PLANNED").trim().toUpperCase(),
+          });
+      
+          if (!result.success) {
+            const fieldErrors = Object.entries(result.error.format())
+                .map(([field, error]) => `${field}: ${Array.isArray(error) ? error.join(", ") : error._errors.join(", ")}`)
+                .join(" | ");
+                errorMessages.push(`Row ${index + 1}: ${fieldErrors}`);
+            return null; // Skip invalid rows
+          }
+      
+          return result.data;
+        } catch (error) {
+          console.error(`Error validating row ${index + 1}:`, error);
+          errorMessages.push(`Row ${index + 1}: Unexpected validation error`);
+          return null;
+        }
+      }).filter(Boolean); // Remove null values
+    
+      console.log("Validated Data:", validatedData); // Debugging step
+    
+      if (validatedData.length === 0) {
+        // Replace alert with toaster notification - use setTimeout to avoid calling in render
+        setTimeout(() => {
+          messageApi.open({
+            type: "error",
+            content: "CSV import failed due to validation errors",
+            duration: 5,
+          });
+          
+          // Show detailed errors in separate toasts
+          if (errorMessages.length > 0) {
+            // Group similar errors to avoid too many toasts
+            const groupedErrors = errorMessages.reduce((acc, error) => {
+              const errorType = error.split(':')[1]?.trim().split(' ')[0] || 'Unknown';
+              if (!acc[errorType]) {
+                acc[errorType] = [];
+              }
+              acc[errorType].push(error);
+              return acc;
+            }, {} as Record<string, string[]>);
+            
+            // Show one toast per error type with count
+            Object.entries(groupedErrors).forEach(([errorType, errors], index) => {
+              setTimeout(() => {
+                messageApi.open({
+                  type: "warning",
+                  content: `${errors.length} ${errorType} error${errors.length > 1 ? 's' : ''} found. Example: ${errors[0].split(':').slice(1).join(':')}`,
+                  duration: 8,
+                });
+              }, 300 + (index * 300)); // Small delay between toasts
+            });
+          }
+        }, 0);
+        return;
+      }
+
+      // Don't update importData state here as it's causing type issues
+      // setImportData((prev) => [...prev, ...validatedData as TInsertShipmentsSchema[]])
+
+      const sendBatches = async (data: any[]) => {
+        let successCount = 0;
+        let failureCount = 0;
+        
+        // Additional validation before sending to API
+        const validBatches = data.map(item => {
+          // Ensure all required fields are present and properly formatted
+          return {
+            ...item,
+            // Ensure status is one of the allowed values
+            status: ["PLANNED", "APPROVED", "REJECTED", "SUBMITTED", "COMPLETED"].includes(item.status) 
+              ? item.status 
+              : "PLANNED",
+            // Ensure dates are in YYYY-MM-DD format
+            plannedOrderDate: item.plannedOrderDate || new Date().toISOString().split('T')[0],
+            plannedDeliveryDate: item.plannedDeliveryDate || new Date().toISOString().split('T')[0],
+            // Ensure numeric fields are numbers
+            plannedQuantity: typeof item.plannedQuantity === 'number' ? item.plannedQuantity : 0,
+            revisedQuantity: typeof item.revisedQuantity === 'number' ? item.revisedQuantity : 0,
+            secondReview: typeof item.secondReview === 'number' ? item.secondReview : 0,
+            totalCost: typeof item.totalCost === 'number' ? item.totalCost : 0,
+          };
+        });
+        
+        for (let i = 0; i < validBatches.length; i += BATCH_SIZE) {
+          const batch = validBatches.slice(i, i + BATCH_SIZE);
+          try {
+            setIsImporting(true);
+            
+            // Log the batch being sent for debugging
+            console.log("Sending batch:", batch);
+            
+            await createShipments.mutateAsync(batch, {
+              onSuccess: () => {
+                purchaseOrdersQuery.refetch();
+                successCount += batch.length;
+              },
+              onError: (err) => {
+                console.error("API Error:", err);
+                // Use setTimeout to avoid calling message in render
+                setTimeout(() => {
+                  messageApi.open({
+                    type: "error",
+                    content: err.message || "An error occurred while adding shipment item(s).",
                   });
-              
-                  if (!result.success) {
-                    const fieldErrors = Object.entries(result.error.format())
-                        .map(([field, error]) => `${field}: ${Array.isArray(error) ? error.join(", ") : error._errors.join(", ")}`)
-                        .join(" | ");
-                        errorMessages.push(`Row ${index + 1}: ${fieldErrors}`);
-                    return null; // Skip invalid rows
-                  }
-              
-                  return result.data;
-                }).filter(Boolean); // Remove null values
-              
-                console.log("Validated Data:", validatedData); // Debugging step
-              
-                if (validatedData.length === 0) {
-                  alert(`Import failed! The following errors were found:\n\n${errorMessages.join("\n")}`);
-                  return;
-                }
-    
-                setImportData((prev) => [...prev, ...validatedData as TInsertShipmentsSchema[]])
-    
-                const sendBatches = async (data: TInsertShipmentsSchema[]) => {
-                  for (let i = 0; i < data.length; i += BATCH_SIZE) {
-                    const batch = data.slice(i, i + BATCH_SIZE);
-                    try {
-                      await createShipments.mutateAsync(batch, {
-                        onSuccess: () => {
-                          setIsImporting(true)
-                          purchaseOrdersQuery.refetch();
-                          messageApi.open({
-                            type: "success",
-                            content: "Shipment added successfully",
-                          });
-                          setIsImporting(false)
-                        },
-                        onError: (err) => {
-                          messageApi.open({
-                            type: "error",
-                            content: err.message || "An error occurred while adding shipment item(s).",
-                          });
-                        },
-                      });
-                    } catch (error) {
-                      console.error("Error sending batch:", error);
-                    }
-                  }
-                };
-    
-                sendBatches(validatedData);
-            }}
-            className="self-end"
-        />
-        </div>
+                }, 0);
+                failureCount += batch.length;
+              },
+            });
+          } catch (error) {
+            console.error("Error sending batch:", error);
+            // Use setTimeout to avoid calling message in render
+            setTimeout(() => {
+              messageApi.open({
+                type: "error",
+                content: "An error occurred while adding shipment item(s).",
+              });
+            }, 0);
+            failureCount += batch.length;
+          } finally {
+            setIsImporting(false);
+          }
+        }
+        
+        // Show summary toast with setTimeout to avoid calling in render
+        if (successCount > 0 || failureCount > 0) {
+          setTimeout(() => {
+            messageApi.open({
+              type: successCount > 0 ? "success" : "warning",
+              content: `Import summary: ${successCount} successful, ${failureCount} failed`,
+              duration: 5,
+            });
+          }, 0);
+        }
+      };
 
-      </div>
+      sendBatches(validatedData);
+    };
 
-      <div className="bg-white rounded-[20px]">
-        <div className="mt-10 z-10">
-          <DataTable columns={columns} data={filteredData} totalItems={filteredData.length} rowClick={(id: string) => handleOrderClick(id)} />
-        </div>
-      </div>
+    // Final return statement with conditional rendering
+    return (
+      <>
+        {!mounted ? renderLoadingState() : 
+         isPending || isImporting ? renderSkeletonLoading() : 
+         renderMainContent()}
       </>
     );
   };
   
-  export default PurchaseOrdersPage;
+export default PurchaseOrdersPage;
   
