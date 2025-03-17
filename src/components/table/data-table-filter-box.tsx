@@ -68,7 +68,7 @@ export function DataTableFilterBox({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="border-dashed">
+        <Button variant="outline" className="border-dashed border-gray-400 text-gray-700 bg-white">
           <PlusCircledIcon className="mr-2 h-4 w-4" />
           {title}
           {selectedValuesSet.size > 0 && (
@@ -76,7 +76,7 @@ export function DataTableFilterBox({
               <Separator orientation="vertical" className="mx-2 h-4" />
               <Badge
                 variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
+                className="rounded-sm px-1 font-normal lg:hidden "
               >
                 {selectedValuesSet.size}
               </Badge>
@@ -105,7 +105,7 @@ export function DataTableFilterBox({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className="w-[200px] p-0 border-gray-300 bg-gray-50 border-[1px]" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>

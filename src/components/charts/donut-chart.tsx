@@ -125,7 +125,7 @@ export const DonutChart: React.FC<ConfigurableDonutChartProps> = ({
       <div className='flex items-center gap-4 w-full'>
         <div className='flex justify-center items-center p-4 w-full'>
           <TremorDonutChart
-            className="w-[200px]"
+            className="w-[200px] h-[200px]" // w-[200px]
             data={chartData}
             category="name"
             value="amount"

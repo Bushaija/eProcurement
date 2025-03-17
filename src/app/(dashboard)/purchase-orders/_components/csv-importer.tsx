@@ -44,7 +44,7 @@ import {
 // import { FileUploader } from "@/components/file-uploader"
 import { FileUploader } from "@/app/(dashboard)/purchase-orders/_components/file-uploader"
 import { useUploadFile } from "@/hooks/use-upload-file"
-
+import { Upload } from "lucide-react"
 interface CsvImporterProps
   extends React.ComponentPropsWithoutRef<typeof DialogTrigger>,
     ButtonProps {
@@ -107,12 +107,12 @@ export function CsvImporter({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className={cn("w-fit", className)} {...props}>
-          Import CSV
+        <Button variant="outline" className={cn("w-fit text-sm font-regular border-gray-400 text-gray-700", className)} {...props}>
+        <Upload className="size-4 mr-2" /> Import
         </Button>
       </DialogTrigger>
       {step === "upload" ? (
-        <DialogContent className="p-8 sm:max-w-xl">
+        <DialogContent className="p-8 sm:max-w-xl border-2 bg-white text-gray-700">
           <DialogHeader>
             <DialogTitle>Upload CSV</DialogTitle>
             <DialogDescription>
@@ -151,7 +151,7 @@ export function CsvImporter({
           />
         </DialogContent>
       ) : (
-        <DialogContent className="overflow-hidden p-8 sm:max-w-6xl">
+        <DialogContent className="overflow-hidden p-8 sm:max-w-6xl bg-gray-50 text-gray-700">
           <div className="flex flex-col items-center gap-2 sm:flex-row">
             <DialogHeader className="flex-1">
               <DialogTitle>Map fields</DialogTitle>
@@ -167,10 +167,10 @@ export function CsvImporter({
               Reset
             </Button>
           </div>
-          <div className="grid h-[26.25rem] w-full overflow-hidden rounded-md border">
-            <Table className="border-b">
+          <div className="grid h-[26.25rem] w-full overflow-hidden rounded-md">
+            <Table className="border-b border-gray-400 border-[1px]">
               <TableHeader className="sticky top-0 z-10 bg-background shadow">
-                <TableRow className="bg-muted/50">
+                <TableRow className="bg-muted/50 border-red-400 border-[1px]">
                   {fields.map((field) => (
                     <PreviewTableHead
                       key={field.value}
@@ -184,18 +184,18 @@ export function CsvImporter({
                       onFieldToggle={onFieldToggle}
                       originalFieldMappings={fieldMappings.original}
                       currentFieldMapping={fieldMappings.current[field.value]}
-                      className="border-r"
+                      className="border-r border-gray-400 border-[1px] text-gray-900 font-semibold"
                     />
                   ))}
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="border-2 text-gray-700 border-gray-400 border-[1px]">
                 {data.map((row, i) => (
                   <TableRow key={i} className="h-10">
                     {fields.map((field) => (
                       <TableCell
                         key={field.value}
-                        className="border-r last:border-r-0"
+                        className="border-r last:border-r-0 border-gray-400 border-[1px]"
                       >
                         <span className="line-clamp-1">
                           {String(row[field.value] ?? "")}
@@ -280,13 +280,13 @@ function PreviewTableHead({
               size="sm"
               role="combobox"
               aria-expanded={open}
-              className="w-48 justify-between"
+              className="w-48 justify-between border-gray-400 border-[1px]"
             >
               {currentFieldMapping || "Select field..."}
               <CaretSortIcon className="ml-2 size-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 border-gray-400 border-[1px] bg-gray-50">
             <Command>
               <CommandInput placeholder="Search field..." />
               <CommandEmpty>No field found.</CommandEmpty>
@@ -306,7 +306,7 @@ function PreviewTableHead({
                       >
                         <CheckIcon
                           className={cn(
-                            "mr-2 size-4",
+                            "mr-2 size-4 border-[2px] border-gray-200",
                             currentFieldMapping === fm
                               ? "opacity-100"
                               : "opacity-0"

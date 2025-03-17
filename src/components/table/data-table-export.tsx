@@ -21,7 +21,7 @@ export const DataTableExport = ({ table, }: PurchaseOrderTableProps) => {
             excludeColumns: ["select", "actions"]
           })
         }
-        className="gap-2"
+        className="p-4 border-gray-400 text-gray-700"
       >
         <Download className="size-4" aria-hidden="true" />
         Export

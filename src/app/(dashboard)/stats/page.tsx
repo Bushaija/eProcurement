@@ -6,11 +6,14 @@ import { DonutChart } from '@/components/charts/donut-chart';
 import { BarChart } from '@/components/charts/bar-chart-new';
 import { KpiEntry, ProgressBarCard } from '@/components/charts/ui/progress-bar-card';
 import { Card } from '@/components/ui/card';
+import styles from "./stats.module.css";
+import { DonutChartWrapper } from './donut-chart-wrapper';
+import { ShipmentTableWrapper } from './components/shipment-table-wrapper';
 
 const dataByFunders = [
   {
     name: 'WHO',
-    amount: 6730,
+    amount: 6530,
     share: '32.1%',
     color: 'bg-cyan-500',
   },
@@ -119,101 +122,45 @@ const chartdata = [
     open: 2890,
     closed: 2338,
   },
-  // {
-  //   date: "Feb 23",
-  //   SolarPanels: 2756,
-  //   Inverters: 2103,
-  // },
-  // {
-  //   date: "Mar 23",
-  //   SolarPanels: 3322,
-  //   Inverters: 2194,
-  // },
-  // {
-  //   date: "Apr 23",
-  //   SolarPanels: 3470,
-  //   Inverters: 2108,
-  // },
-  // {
-  //   date: "May 23",
-  //   SolarPanels: 3475,
-  //   Inverters: 1812,
-  // },
-  // {
-  //   date: "Jun 23",
-  //   SolarPanels: 3129,
-  //   Inverters: 1726,
-  // },
-  // {
-  //   date: "Jul 23",
-  //   SolarPanels: 3490,
-  //   Inverters: 1982,
-  // },
-  // {
-  //   date: "Aug 23",
-  //   SolarPanels: 2903,
-  //   Inverters: 2012,
-  // },
-  // {
-  //   date: "Sep 23",
-  //   SolarPanels: 2643,
-  //   Inverters: 2342,
-  // },
-  // {
-  //   date: "Oct 23",
-  //   SolarPanels: 2837,
-  //   Inverters: 2473,
-  // },
-  // {
-  //   date: "Nov 23",
-  //   SolarPanels: 2954,
-  //   Inverters: 3848,
-  // },
-  // {
-  //   date: "Dec 23",
-  //   SolarPanels: 3239,
-  //   Inverters: 3736,
-  // },
 ]
-
 
 const currencyFormatter = (number: number) => {
   return Intl.NumberFormat('us').format(number).toString();
 };
 
-const Home = () => {
-  const kpiData: KpiItem[] = [
-    {
-      id: '0',
-      name: 'Shipments Received',
-      count: 23,
-    },
-    {
-      id: '1',
-      name: 'Shipments Ordered',
-      count: 33,
-    },
-    {
-      id: '2',
-      name: 'Shipments Cancelled',
-      count: 4,
-    },
-    {
-      id: '3',
-      name: 'Shipments on Hold',
-      count: 2,
-    },
-  ];
+const kpiData: KpiItem[] = [
+  {
+    id: '0',
+    name: 'Shipments Received',
+    count: 23,
+  },
+  {
+    id: '1',
+    name: 'Shipments Ordered',
+    count: 33,
+  },
+  {
+    id: '2',
+    name: 'Shipments Cancelled',
+    count: 4,
+  },
+  {
+    id: '3',
+    name: 'Shipments on Hold',
+    count: 2,
+  },
+];
 
+const Home = () => {
   return (
-    <section className='flex flex-col gap-4 w-full max-w-[1180px] mx-auto'>
+    <section className='flex flex-col gap-4 w-full max-w-[1180px] mx-auto text-gray-800'>
       <div className="grid grid-cols-2 gap-4">
         <div className='flex justify-center items-center max-w-[590px] w-full'>
           <KpiCard data={kpiData} />
         </div>
         
-        <Card>
-          <DonutChart
+        <Card className='border-gray-200 border-[1px]'>
+          <DonutChartWrapper
             title="Costs breakdown"
             description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr."
             categories={categories}
@@ -225,21 +172,18 @@ const Home = () => {
         </Card>
       </div>
       <div className='grid grid-cols-2 gap-4 w-full'>
-        <Card className='w-full p-8'>
+        <Card className='border-gray-200 border-[1px] p-4'>
           <BarChart
             className="h-80 max-w-[720px]"
             data={chartdata}
             index="division"
             categories={["open", "delayed", "closed"]}
-            // valueFormatter={(number: number) =>
-            //   `$${Intl.NumberFormat("us").format(number).toString()}`
-            // }
             onValueChange={(v) => console.log(v)}
             xAxisLabel="Division"
             yAxisLabel="Count"
           />
         </Card>
-        <Card className='w-full p-12'>
+        <Card className='w-full p-12 border-gray-200 border-[1px]'>
           <ProgressBarCard
             title="Shipments Tracker"
             change="+0.2%"
@@ -250,8 +194,13 @@ const Home = () => {
             ctaLink="#"
             data={data}
           />
-         </Card>
+        </Card>
       </div>
+      
+      {/* Use the wrapped version of the table */}
+      <Card className='w-full p-6 border-gray-200 border-[1px]'>
+        <ShipmentTableWrapper />
+      </Card>
     </section>
   );
 };

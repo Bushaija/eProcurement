@@ -94,11 +94,11 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)]">
+      <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border-[1px] border-gray-200 md:h-[calc(90dvh-240px)]">
         <Table className="relative">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className='border-gray-200 border-[1px] bg-white font-semibold'>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -116,7 +116,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className="cursor-pointer"
+                  className="cursor-pointer border-gray-200 border-[1px]"
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                 >

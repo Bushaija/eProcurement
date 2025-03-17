@@ -22,18 +22,18 @@ const routes = [
     disabled: false,
     icon: <PurchaseOrderIcon />
   },
+  // {
+  //   href: "/analytics",
+  //   label: "Analytics",
+  //   disabled: false,
+  //   icon: <AnalyticsIcon />
+  // },
   {
-    href: "/analytics",
+    href: "/stats",
     label: "Analytics",
     disabled: false,
     icon: <AnalyticsIcon />
   },
-  // {
-  //   href: "/stats",
-  //   label: "Statistics",
-  //   disabled: false,
-  //   icon: <AnalyticsIcon />
-  // },
   // {
   //   href: "/invoice",
   //   label: "Invoice",
