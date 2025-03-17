@@ -309,16 +309,16 @@ export const calculateTotalIncurredCost = (items: any[]): number => {
   }, 0);
 };
 
-// export function transformDivisionCostData(data: any[]) {
-//   return Object.entries(
-//       data.reduce((acc, { division, totalCost }) => {
-//           acc[division] = (acc[division] || 0) + totalCost;
-//           return acc;
-//       }, {})
-//   )
-//   .map(([division, totalCost]) => ({ division, totalCost }))
-//   .sort((a, b) => b.totalCost - a.totalCost);
-// }
+export function transformDivisionCostData(data: any[]) {
+  return Object.entries(
+      data.reduce((acc, { division, totalCost }) => {
+          acc[division] = (acc[division] || 0) + totalCost;
+          return acc;
+      }, {})
+  )
+  .map(([division, totalCost]) => ({ division, totalCost }))
+  .sort((a, b) => b.totalCost - a.totalCost);
+}
 
 export function getTotalReceivedShipments(data: any[]): number {
   return data.reduce((total, shipment) => {
